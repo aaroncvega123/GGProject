@@ -1,0 +1,29 @@
+http://lovegreenguide.azurewebsites.net/uw_phpMyAdmin/index.php?token=7fc31e7a45eb0841d97670c926f727b7#PMAURL-0:index.php?db=&table=&server=1&target=&token=7fc31e7a45eb0841d97670c926f727b7
+ID: b0eec879a42eb2   
+PW: 62e1b263
+
+ftp://cnws-prod-bjb-003.ftp.chinacloudsites.chinacloudapi.cn
+id: LoveGreenGuide\yiruli
+pass: Uw1364228
+
+http://www.lovegreenguide.com/map_point_test.php                             
+
+http://www.lovegreenguide.com/map_point_new_121317.php?lng=112.578658&lat=28.247855
+
+http://www.lovegreenguide.com/map_point_new_121317.php?lng=104.075155&lat=37.198839
+
+http://www.lovegreenguide.com/map_point_test.php?lng=104.075155&lat=37.198839
+
+http://www.lovegreenguide.com/map_point_test.php?lng=112.578658&lat=28.247855
+
+http://www.lovegreenguide.com/map_point_test.php?lng=114.070095&lat=22.547794
+
+http://www.lovegreenguide.com/backend.php
+
+lovegreenguide test account
+username: yiruli09@gmail.com
+password: 123
+
+Files used:
+map_point_test.php
+ajax_test_from_Aaron.php

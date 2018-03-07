@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <style>
+       #map {
+        height: 98vh;
+        float: left;
+       }
+       body{
+           margin-left:0%;
+           margin-right:0%;
+           margin-top:0%;
+           margin-right:0%;
+       }
+       .navbar{
+            background-color:aqua;
+            float: left;
+            height: 98vh;
+       }
+    </style>
+  </head>
+  <body>
+
+    <div class="navbar col-lg-3" id="collapsible">
+        <ul>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li><button>HelloButton</button></li>
+        </ul>
+    </div>
+    <div class="col-lg-12" id="map"></div>
+
+
+
+
+
+
+
+    <script>
+      
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>    
+    <script>
+        var marker;
+        var large = true;
+        var uluru;
+        function initMap() {
+            uluru = {lat: -25.363, lng: 131.044};
+            var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 4,
+            center: uluru
+        });
+            marker = new google.maps.Marker({
+                position: uluru,
+                map: map
+            });
+
+            marker.addListener('click', function(){
+                if(large){
+                    $('#map').removeClass("col-lg-12").addClass("col-lg-9");
+                    $("#collapsible").show();
+                    large = false;
+                }
+                else{
+                    $('#map').removeClass('col-lg-9').addClass('col-lg-12');
+                    $("#collapsible").hide();
+                    large = true;
+                }
+            }, {duration:500});
+         }
+
+         $("button").click(function(){
+            $('#map').removeClass('col-lg-9').addClass('col-lg-12');
+                    $("#collapsible").hide();
+                    large = true;
+         });
+         $("#collapsible").hide();
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARO_GKPZGUuXd515ZRpkxG2rDyXey0V5c&callback=initMap"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </body>
+</html>

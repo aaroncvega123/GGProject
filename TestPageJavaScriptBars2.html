@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <style>
+       #map {
+        height: 98vh;
+        float: left;
+       }
+       body{
+           margin-left:0%;
+           margin-right:0%;
+           margin-top:0%;
+           margin-right:0%;
+       }
+       .navbar{
+            float: left;
+            height: 98vh;
+       }
+       #desc{
+           float:left;
+       }
+       #bar{
+            float:left;
+            background-color:brown;
+       }
+       #value{
+            float:left;
+       }
+       .description{
+           list-style-type: none;
+       }
+       #dataBox{
+            box-shadow: 3px 3px 3px #888888;
+            background-color:rgba(236, 236, 236, 0.979);
+            padding:10px;
+            padding-right:20px;
+            float: left;
+            height:100vh;
+            overflow-y:scroll;
+       }
+       #descriptionBox{
+            border-style:groove;
+            width:180px;
+            float:left;
+       }
+       .description{
+            padding-left:5px;
+       }
+        #barCharts{
+           float:left;
+           width:150px;
+       }
+       #graphDiv{
+            display:inline-block;
+            min-width:340px;
+       }
+       .fig{
+            float:left;
+       }
+
+       #title{
+           font-size:medium;
+           margin-bottom:3px;
+           margin-top:3px;
+           border-bottom:black;
+           border-bottom: 1px solid #999;
+       }
+       barcharts.li{
+           list-style:none;
+       }
+       #Actions{
+           border-style:groove;
+           overflow:auto;
+           width:auto;
+       }
+       .popover{
+           max-width:225px;
+       }
+       .progress-bar {
+            width: 100%;
+            margin-bottom: 10px;
+            background:none;
+        }
+
+        .progress-track {
+            position: relative;
+            width: 100%;
+            height: 20px;
+            background: #ebebeb;
+            box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+            border-radius: 3px;
+        }
+
+        .progress-fill {
+            position: relative;
+            background: #666;
+            height: 20px;
+            width: 100%;
+            color: #fff;
+            text-align: center;
+            font-family: "Lato","Verdana",sans-serif;
+            font-size: 12px;
+            line-height: 20px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,.2);
+            border-radius: 3px;
+        }
+        #seperator{
+            border-bottom: 1px solid #999;
+            float:left; 
+            clear:left;
+        }
+    </style>
+  </head>
+  <body>
+
+    <div class='dataBoxClass' id='dataBox'>
+        <div style="min-width:300px;"id='title'>
+            <h2>Review Summary</h2>
+        </div>
+        <div style="margin-bottom:50px;"id="descAndBars">
+            <h3 class="innerTitle">Water Issues</h3>
+            <div>
+                <div style="float:left; clear:left;">Abnormal Color</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                When “Yellow”, “Green”, “Red-brown”, “Black”
+                or “Other” is chosen" style="float:right; padding-right:5px;" 
+                class="glyphicon glyphicon-question-sign">
+                </i>
+            </div>
+            <div class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="abColBar" class="progress-fill">
+                        <span id='fig1'>1</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="float:left; clear:left;">Tubid</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                When turbidity > 3" style="float:right; padding-right:5px;" 
+                class="glyphicon glyphicon-question-sign">
+                </i>
+            </div>
+            <div class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="turbidBar" class="progress-fill">
+                        <span id='fig2'>1</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="float:left; clear:left;">Abnormal Odor</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                When “Aware smell” or “Strong smell” is chosen" style="float:right; padding-right:5px;" 
+                class="glyphicon glyphicon-question-sign">
+                </i>
+            </div>
+            <div  class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="abOdorWaterBar" class="progress-fill">
+                        <span id='fig3'>1</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="float:left; clear:left;">Floating Objects</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                When “Yes” is chosen in the corresponding
+                question" style="float:right; padding-right:5px;" 
+                class="glyphicon glyphicon-question-sign"></i>
+            </div>
+            <div class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="floatObBar" class="progress-fill">
+                        <span id='fig4'>1</span>
+                    </div>
+                </div>
+            </div>
+            <h3 style="float:left; clear:left;">Air Issues</h3>            
+            <div>
+                <div style="float:left; clear:left;">Abnormal Color</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                When “Yellow”, “Green”, “Red-brown”, “Black”,
+                “White” or “Other” is chosen" style="float:right; padding-right:5px;" 
+                class="glyphicon glyphicon-question-sign"></i>
+            </div>
+            <div  class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="abnormalColorAir" class="progress-fill">
+                        <span id='fig5'>1</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="float:left; clear:left;">Low Visiblity</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                When “< 0.5 km” is chosen" style="float:right; padding-right:5px;" 
+                class="glyphicon glyphicon-question-sign"></i>
+            </div>
+            <div  class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="lowVisBar" class="progress-fill">
+                        <span id='fig6'>1</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="float:left; clear:left;">Abnormal Odor</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                When “Aware smell” or “Strong smell” is chosen" style="float:right; padding-right:5px;" 
+                class="glyphicon glyphicon-question-sign"></i>
+            </div>
+            <div  class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="abOdorBar" class="progress-fill">
+                        <span id='fig7'>1</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="float:left; clear:left;">Uncomfortable Feeling</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                When “Yes” is chosen in the corresponding
+                question" style="float:right; padding-right:5px;" 
+                class="glyphicon glyphicon-question-sign"></i>
+            </div>
+            <div  class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="uncomfBar" class="progress-fill">
+                        <span id='fig8'>1</span>
+                    </div>
+                </div>
+            </div>
+            <h3 style="float:left">Solid Waste Issues</h3>            
+            <div>
+                <div style="float:left; clear:left;">Abnormal Odor</div>
+                <i data-toggle="popover" data-trigger="hover" data-content="
+                    When “Aware smell” or “Strong smell” is chosen" style="float:right; padding-right:5px;" 
+                    class="glyphicon glyphicon-question-sign"></i>
+            </div>
+            <div class="progress-bar horizontal">
+                <div class="progress-track">
+                    <div id="abOdorWasteBar" class="progress-fill">
+                        <span id='fig9'>1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+                      
+        <div style="clear:left; width: 200px; margin-bottom: 50px;" id='Actions'>
+            <div style="float:left; margin-right: 10px; margin-left: 10px;">Write Review</div>
+            <div style="float:left">More Review</div>
+        </div>
+
+<!--
+    <div>Abnormal color</div>
+    <form>
+        <input type="number" id="formValueId1"/>
+        <input type="submit" onclick="adjustBar(1)"/>
+    </form>
+    <div>Turbid</div>
+    <form>
+        <input type="number" id="formValueId2"/>
+        <input type="submit" onclick="adjustBar(2)"/>
+    </form>
+    <div>Abnormal Odor</div>
+    <form>
+        <input type="number" id="formValueId3"/>
+        <input type="submit" onclick="adjustBar(3)"/>
+    </form>
+    <div>Floating Objects</div>
+    <form>
+        <input type="number" id="formValueId4"/>
+        <input type="submit" onclick="adjustBar(4)"/>
+    </form>
+    <div>Abnormal Color</div>
+    <form>
+        <input type="number" id="formValueId5"/>
+        <input type="submit" onclick="adjustBar(5)"/>
+    </form>
+    <div>Low Visiblity</div>
+    <form>
+        <input type="number" id="formValueId6"/>
+        <input type="submit" onclick="adjustBar(6)"/>
+    </form>
+    <div>Abnormal Odor</div>
+    <form>
+            <input type="number" id="formValueId7"/>
+            <input type="submit" onclick="adjustBar(7)"/>
+    </form>
+    <div>Uncomfortable Feeling</div>
+    <form>
+            <input type="number" id="formValueId8"/>
+            <input type="submit" onclick="adjustBar(8)"/>
+    </form>
+    <div>Abnormal Odor</div>
+    <form>
+            <input type="number" id="formValueId9"/>
+            <input type="submit" onclick="adjustBar(9)"/>
+    </form>  
+-->           
+    </div>
+     <a style="background-color:rgba(236, 236, 236, 0.979); box-shadow: 3px 3px 3px #888888; float:left;" href="#" id="toggleReview" class="btn btn-sm">
+        <span id ="toggleIcon" style="color:black" class="glyphicon glyphicon-triangle-left"></span>
+    </a>   
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>    
+    <script>
+        var barValArray = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+        var barSizeArray = [100, 100, 100, 100, 100, 100, 100, 100, 100];
+        var barNameArray = ['abColBar', 'turbidBar', 'abOdorWaterBar', 'floatObBar', 'abnormalColorAir', 'lowVisBar', 'abOdorBar', 'uncomfBar', 'abOdorWasteBar'];
+
+        function adjustBar(barNum){
+            if(barNum < 0 || barNum > 9){
+                return;
+            }
+            var formValueId = 'formValueId' + barNum;
+            var input = document.getElementById(formValueId).value;
+            if(input < 0) input = 0;
+
+            barValArray[barNum - 1] = input;            
+            setBarSizes();
+        }
+
+        function setBarSizes(){
+            var largestIndex = 0;
+            for(i = 0; i < barValArray.length; i++){
+                if(barValArray[largestIndex] < barValArray[i]){
+                    largestIndex = i;
+                }
+            }
+            for(i = 0; i < barSizeArray.length; i++){
+                var size = barValArray[i]/barValArray[largestIndex] * 100;
+                if(size > 100) size = 100;
+                barSizeArray[i] = size;
+            }         
+            //alert(barSizeArray);
+            for(i = 0; i < barNameArray.length; i++){
+                //alert(i);
+                var hashtag = '#' + barNameArray[i];
+                var figure = '#fig' + (i + 1);
+                //alert(barSizeArray[i]);
+                //alert(hashtag);
+                $(hashtag).width(barSizeArray[i] + '%');
+                var displayValue = barValArray[i];
+                if(displayValue > 999999999){
+                    displayValue = displayValue/1000000000 + " B";
+                }
+                if(displayValue > 999999){
+                    displayValue = displayValue/1000000 + " M";
+                }                
+                else if(displayValue > 999){
+                    displayValue = displayValue/1000 + " k";
+                }
+
+                //alert("<div class = 'fig' id = 'fig" + (i + 1) + "'>" + barValArray[i] + "</div>");
+                $(figure).replaceWith("<span id = 'fig" + (i + 1) + "'>" + displayValue + "</span>");   
+            }
+            
+        }
+
+        $(function() {
+            $("form").submit(function() { return false; });
+        });
+
+
+        $("#closeButton").click(function(event){
+            $("#dataBox").fadeOut(200);
+
+        });
+        $("#toggleReview").click(function(){
+            $('#dataBox').toggle(300);
+            $('#toggleIcon').toggleClass("glyphicon glyphicon-triangle-left glyphicon glyphicon-triangle-right");
+        });
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
+        //document.getElementById('abColBar').style.width = "50px";
+        //document.getElementById('turbidBar').style.width = "50px";
+
+        //var barWidth = sum / 10;
+        
+
+                //$('#bar').width(barWidth);
+                //$('#value').replaceWith("<div id='value'>" + sum + "</div>");    
+
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARO_GKPZGUuXd515ZRpkxG2rDyXey0V5c&callback=initMap"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,217 @@
+<DOCTYPE! html>
+<html lang="en">
+    <head>
+        <link href="WriteReview.css" type="text/css" rel="stylesheet" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    
+        <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AVpUxExAZfNTcMV8Wn1uccLu"></script>
+        <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    
+        <!-- Latest compiled JavaScript -->
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    
+        <title>Explore Reviews</title>
+        <link rel="shortcut icon" href="green-pin.png">
+    </head>
+    <body>
+        <style>
+            #overlay{
+                pointer-events:none;
+                height:100vh;
+                position: absolute;
+                z-index: 1;
+            }
+            #allmap{
+                height:100vh;
+                position:static;
+            }
+            .blue{
+                background-color:rgb(66, 133, 244);
+            }
+            .red{
+                background-color:red;
+            }
+            .white{
+                background-color:white;
+            }
+            .widget{
+                pointer-events:all;
+                box-shadow:2px 2px 2px #525252;
+            }
+            .no-space-horizontal{
+                padding-left:0px;
+                padding-right:0px;
+            }
+            .no-space-vertical{
+                padding-top:0px;
+                padding-bottom:0px;
+            }
+            .add-margin-vertical{
+                padding-top:5px;
+                padding-bottom:5px;
+            }
+            .add-margin-horizontal{
+                padding-left:10px;
+                padding-right:10px;
+            }
+            div{
+                
+            }
+            #sidebar-wrapper{
+                overflow-y:auto;
+                overflow-x:hidden;   
+            }
+            #sidebar-wrapper::-webkit-scrollbar-track
+            {
+                -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+                background-color: #F5F5F5;
+            }
+            
+            #sidebar-wrapper::-webkit-scrollbar
+            {
+                width: 3px;
+                background-color: #727272;
+            }
+            
+            #sidebar-wrapper::-webkit-scrollbar-thumb
+            {
+                background-color: #727272;
+            }
+            #infoDiv{
+             
+            }
+            .no-wrap{
+                white-space: nowrap;
+            }
+            .btn-group .btn{
+                background-color:rgb(66, 133, 244);
+                color:white;
+                font-weight:bold;
+            }
+        </style>
+        <div id="wrapper">
+            <div id="overlay" class="container-fluid col-md-12 col-sm-12 col-xs-12 no-space-horizontal">
+                <div id="sidebar-wrapper" class="col-lg-4 col-md-4 col-sm-6 col-xs-12 no-space-horizontal widget" style="max-height:100vh;">
+                    <div id="toolbar-wrapper" class="hidden-md hidden-sm hidden-lg blue col-sm-12 no-space-horizontal widget">
+                        <div class="btn-toolbar mb-3 no-space-horizontal" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="btn-group mr-2  no-space-horizontal" role="group" aria-label="First group">
+                                <button  type="button" class="btn btn-secondary">Home</button>
+                                <button type="button" class="btn btn-secondary">See reviews</button>
+                                <button type="button" class="btn btn-secondary">See government actions</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="overflow-x:hidden" id="form-bar-wrapper" class="blue add-margin-horizontal no-space-vertical no-wrap">
+                        <div id="location-search" class="row no-space-vertical">
+                            <form class="container-fluid">
+                                <div style = "padding-top:5px;">
+                                    <div><b style="color:white;">Go to Location</b></div>
+                                </div>                            
+                                <div class="col-xs-10 no-space-horizontal">
+                                    <input type="text" class="form-control input-sm" id="suggestId" name="s_company" placeholder="Company Name or (Location + Company Name)" size="62" autocomplete="off">
+                                </div>
+                                <div class="col-xs-2 no-space-horizontal">
+                                    <button style="width:100%" type="submit" class="btn btn-default btn-sm">
+                                        Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="map-filters" class="row ">
+                            <form class="container-fluid">
+                                <div style="min-width:100px;"><b style="color:white;">Search Reviews</b></div>
+                                <div class="row" style="padding-bottom:10px;">
+                                    <div class="col-xs-12">
+                                        <div class="col-xs-10 no-space-horizontal">
+                                            <input type="text" class="form-control input-sm" id="suggestId" name="s_company" placeholder="Industry/Product/Company Name/(Location + Company Name)" size="62" autocomplete="off">
+                                        </div>
+                                        <div class="col-xs-2 no-space-horizontal">
+                                            <button style="width:100%" type="submit" class="btn btn-default btn-sm">
+                                                Search
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row no-space-horizontal no-space-vertical">
+                                    <div class="col-xs-12">
+                                        <div class="col-xs-6 no-space-horizontal">
+                                            <input type="text" class="form-control input-sm" id="suggestId" name="s_company" placeholder="Near Location" size="62" autocomplete="off">
+                                        </div>
+                                        <div class="col-xs-6 no-space-horizontal">
+                                            <input type="text" class="form-control input-sm" name="s_location" placeholder="Search for Reviews">
+                                        </div>                                          
+                                    </div>
+                              
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="infoDiv" class="white container-fluid widget">
+                        <div class="no-wrap">
+                            <div class="col-xs-10"></div>
+                            <div class="col-xs-2">
+                                <button id ="closeInfo" type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="container-fluid"><h3 id="count_c" class="text-warning" style="border-bottom: 1px solid silver; margin-top: 3px;">2 Reviews - intel  - Rating: 1.50</h3></div>
+                        <div id="list"><div class="container-fluid" style="border-bottom: 1px solid silver;"><div class="row"><div class="col-sm-6">Company Name: intel<br>Company Address: 广东省深圳市福田区金田路4018号安联大厦18层b03<br>City: 深圳市<br>Company Industry: Eletronical equipment<br>Company Product: cpu<br>Rating: 2<br><img src="2.png" width="228" height="30"><br>Reviews: good<br>Environment Type:      <br>Related News, Videos, or links: <br>EPA Data: null<br>Measurement Data: null<br>Time: 2017-11-17 05:15:49<br></div><div class="col-sm-6" id="image_div314"></div></div><div class="row"><div class="col-sm-6 col-sm-push-6"><p>Image Count: 0</p></div><div class="col-sm-6 col-sm-pull-6"><p>Was this review …?</p><button class="btn btn-default" id="btn314">Helpful</button><button class="btn btn-default">Report as Inappropriate</button></div></div><p id="314" class="text-primary"></p></div><div class="container-fluid" style="border-bottom: 1px solid silver;"><div class="row"><div class="col-sm-6">Company Name: intel<br>Company Address: 广东省深圳市福田区金田路4018号安联大厦18层b03<br>City: 深圳市<br>Company Industry: Eletronical equipment<br>Company Product: cpu<br>Rating: 1<br><img src="1.png" width="228" height="30"><br>Reviews: good<br>Environment Type:      <br>Related News, Videos, or links: <br>EPA Data: null<br>Measurement Data: null<br>Time: 2017-11-17 05:15:51<br></div><div class="col-sm-6" id="image_div304"></div></div><div class="row"><div class="col-sm-6 col-sm-push-6"><p>Image Count: 0</p></div><div class="col-sm-6 col-sm-pull-6"><p>Was this review …?</p><button class="btn btn-default" id="btn304">Helpful</button><button class="btn btn-default">Report as Inappropriate</button></div></div><p id="304" class="text-primary"></p></div></div>
+                    </div>
+                </div>
+                <div id="outter-wrapper" class="container-fluid no-space-horizontal hidden-xs">
+                    <div class="btn-toolbar mb-3 no-space-horizontal" role="toolbar" aria-label="Toolbar with button groups">
+                        <div id="first" class="btn-group mr-2 no-space-horizontal" role="group" aria-label="First group">
+                            <button id="toggleSideBar" type="button" class="btn btn-secondary widget">
+                                <span class="glyphicon glyphicon-triangle-left"></span>
+                            </button>
+                            <button  type="button" class="btn btn-secondary widget">Home</button>
+                            <button type="button" class="btn btn-secondary widget">See reviews</button>
+                            <button type="button" class="btn btn-secondary widget">See government actions</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="allmap" class="col-md-12"></div>            
+        </div>
+        <script>
+            //Initializes map attributes
+            var map = new BMap.Map("allmap");    // 创建Map实例
+            map.centerAndZoom(new BMap.Point(105.404, 35.915), 5);  // 初始化地图,设置中心点坐标和地图级别
+            map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+            map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
+            map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+            var mapLocation = {
+                longitude:116.404,
+                latitude:39.915
+            };
+            var marker = new BMap.Marker(new BMap.Point(mapLocation.longitude, mapLocation.latitude));
+            map.addOverlay(marker);
+
+            var sideBarHidden = false;
+            $('#infoDiv').hide(0);
+
+            marker.addEventListener("click", function(e){
+                $("#infoDiv").animate({height: 'toggle'}, 200);                
+            });
+            $("#closeInfo").click(function(e){
+                $("#infoDiv").animate({height: 'toggle'}, 200);                
+            });   
+
+            $("#toggleSideBar").click(function(e){
+                $("#sidebar-wrapper").animate({width: 'toggle'}, 0);                
+            });        
+
+            var firstHeight= $("#first").height();
+            $("#toggleSideBar").css({height: firstHeight});
+        </script>
+    </body>
+</html>

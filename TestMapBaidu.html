@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+   
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AVpUxExAZfNTcMV8Wn1uccLu"></script>
+	<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <style>
+       #allmap {
+        height: 98vh;
+        float: left;
+       }
+       body{
+           margin-left:0%;
+           margin-right:0%;
+           margin-top:0%;
+           margin-right:0%;
+       }
+       .navbar{
+            background-color:aqua;
+            float: left;
+            height: 98vh;
+       }
+    </style>
+  </head>
+  <body>
+
+    <div class="navbar col-lg-3" id="collapsible">
+        <ul>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li>Hello</li>
+            <li><button>HelloButton</button></li>
+        </ul>
+    </div>
+    <div class="col-lg-12" id="allmap"></div>
+
+
+
+
+
+
+
+    <script>
+      
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>    
+    <script>
+         $("#collapsible").hide();
+        var map = new BMap.Map("allmap");    // 创建Map实例
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);  // 初始化地图,设置中心点坐标和地图级别
+        map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+        map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
+        map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+        var marker = new BMap.marker(new BMap.point(116.404, 39.915));
+        map.addOverlay(marker);
+         $("button").click(function(){
+            $('#map').removeClass('col-lg-9').addClass('col-lg-12');
+                    $("#collapsible").hide();
+                    large = true;
+         });
+
+    </script>
+    <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARO_GKPZGUuXd515ZRpkxG2rDyXey0V5c&callback=initMap"></script> -->
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </body>
+</html>
