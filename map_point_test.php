@@ -113,6 +113,42 @@
 		  		//die("Sorry. Error occurred. Please try again.");
 		  }
 				  
+		  try{
+
+			//$db=new PDO("mysql:dbname=myGreenGuide;host=us-cdbr-azure-west-b.cleardb.com","b4f6ad8be99b99","0ba0581c");
+			//$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);				  
+			
+			$rows=$db->query("select lng, lat, company, address, city, AVG(rating) as avg_r, COUNT(id) as num_r from review where status=1 GROUP BY lng,lat,company ");
+			$a=array();
+			foreach ($rows as $row) {
+		   
+				  $a[]=$row;
+			} 
+
+			$cities=$db->query("select distinct CompanyLocation from ipe_data");
+
+			$ipeData=array();
+
+			 foreach ($cities as $city) {
+
+				$groups = $db->query("select CompanyID, CompanyName, CompanyLocation, Year, Longitude, Latitude from ipe_data where CompanyLocation ='$city[0]'");
+				$eachR=array();
+				foreach ($groups as $each) {
+					$eachR[] = $each;
+				}
+				$ipeData[] = $eachR;
+			}
+
+			// $rowsIpe=$db->query("select CompanyID, CompanyName, CompanyLocation, Year from ipe_data");
+			
+			// foreach ($rowsIpe as $rowIpe) {
+				  // $ipeData[]=$rowIpe;
+			//  }
+		  }
+		catch(Exception $e){
+			die(print_r($e));
+				die("Sorry, error occured. Please try again.");
+		}
 ?>		  
 
 <DOCTYPE! html>
@@ -335,6 +371,9 @@
 
 	var all_ratings = <?php echo json_encode($all_ratings) ?>;
 
+	var ipe = <?php echo json_encode($ipeData) ?>;
+	//console.log(ipe);
+
 	//alert(all_ratings[0]);
 
 	//alert(all[0].water.Water_Issue_ID);
@@ -427,7 +466,9 @@
 							offset: new BMap.Size(10,-25)
 						   };
 						   
-				var m_color;		   	
+				var m_color;	
+
+				//this loop places all the markers on the map	   	
 				for(var i=0;i<data.length;i++){
 					
 					//alert(data[i]);
@@ -492,6 +533,45 @@
 
 	}
 
+	//For setting ipe markers
+	if(ipe.length>0){
+		for(var i=0;i<ipe.length;i++){
+			
+			// var point_color = "blue";
+			//设置marker图标为水滴
+			// var location = ipe[i][0].CompanyLocation;
+
+			var lng = ipe[i][0].Longitude, lat = ipe[i][0].Latitude;
+
+			var pCompany = new BMap.Marker(new BMap.Point(lng,lat), {
+			  // 指定Marker的icon属性为Symbol
+			  icon: new BMap.Symbol(BMap_Symbol_SHAPE_BACKWARD_CLOSED_ARROW, {
+				scale: 1.6,//图标缩放大小
+				fillColor: "blue",//填充颜色
+				fillOpacity: 0.8//填充透明度
+			  })
+			});
+
+			var curCity = ipe[i][0].CompanyLocation;
+					
+			// var content = "<h4 onclick='win_com_click("+lng+","+lat+")' style='margin:0 0 5px 0;padding:0.2em 0; cursor: pointer; text-decoration: underline;'>"+ipe[i].CompanyName+"</h4>" + "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em;'>"+ipe[i].CompanyLocation+"</p>";
+
+			var content = "<div style='height:130px;overflow-y:scroll'>";
+			for (var j = 0; j < ipe[i].length; j++) {
+				var link = "http://www.ipe.org.cn/IndustryRecord/regulatory-record.aspx?companyId=" + ipe[i][j].CompanyID + "&dataType=0&isyh=0";
+				content += "<a id='clink' href="+link+" onclick='win_com_click("+lng+","+lat+")' style='margin:0 0 5px 0;padding:0.2em 0; cursor: pointer; text-decoration: underline;'>"+ipe[i][j].CompanyName+"</a>" + "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em;'>"+ curCity +"</p>"
+				
+			}
+			content += "</div>"
+		
+		
+			map.addOverlay(pCompany);               // 将标注添加到地图中
+			addClickHandler(content,pCompany);
+			addOverHandler_ipe(content,pCompany,curCity);
+			
+		}
+	}
+
 
 	function win_com_click(lng,lat){
 			var mydiv = document.getElementById('getMap_point').innerHTML = '<form id="map_point"  action="map_point.php"><input name="lng" type="hidden" value="'+ lng +'" /><input name="lat" type="hidden" value="'+ lat +'" /></form>';
@@ -536,6 +616,35 @@
 				openInfo(content,e);	
 			}		
 		);
+	}
+
+	function addOverHandler_ipe(content,marker,curCity) {
+		marker.addEventListener("mouseover", function(e) {
+			openInfo(content,e),
+			getBoundary(curCity);
+		});
+	}
+
+	function getBoundary(city){       
+		var bdary = new BMap.Boundary();
+		bdary.get(city, function(rs){       //获取行政区域  
+			var count = rs.boundaries.length; //行政区域的点有多少个
+			if (count === 0) {
+				alert('未能获取当前输入行政区域');
+				return ;
+			}
+          	var pointArray = [];
+			for (var i = 0; i < count; i++) {
+				var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeColor: "#ff0000"}); //建立多边形覆盖物
+				map.addOverlay(ply);  //添加覆盖物
+				// pointArray = pointArray.concat(ply.getPath());
+
+				ply.addEventListener('mouseout', function(clickEvent) {
+					map.removeOverlay(ply);
+				});
+			}    
+			// map.setViewport(pointArray);    //调整视野                
+		});   
 	}
 
 	/*

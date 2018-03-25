@@ -24,7 +24,7 @@
 </head>
 <body>
 	<?php
-		include("header_b.php");				
+		include("header_b_Aaron.php");				
 	?>
 	<!--
      	<nav class="navbar navbar-default" style="margin-bottom:0px; background-color: white; border: white; ">
@@ -96,14 +96,14 @@
                   		  <form class="form-inline" role="form">
 							  <div class="form-group">
 							    <label for="go_location">Please search the city or company in the dropdown menu and click it. System'll bring the city or company location on the map:</label>
-							    <input type="text" class="form-control input-sm" id="suggestId_2" size="60" placeholder="Search Baidu Map - Company Name or (Location + Company Name)">
+							    <input type="text" class="form-control input-sm" id="suggestId_2" size="50" placeholder="Company Name or (Location + Company Name)">
 							  </div>
 							  <div id="searchResultPanel_2" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
 						  </form>
 
 						  <form action="map_go.php" class="form-inline" role="form">
 							  <div class="form-group">
-							    <label for="industry">Please key in the industry or product you'd like to search on the map and click "Search Reviews on map".</label>
+							    <label for="industry">Please key in the industry or product you'd like to search on the map and click "Search for Reviews".</label>
 							    <input name="industry" type="text" class="form-control input-sm" size="30" placeholder="Industry">
 							  </div>
 							  <div class="form-group">
@@ -111,7 +111,7 @@
 							    <input name="product" type="text" class="form-control input-sm" size="30" placeholder="Product">
 							  </div>
 							  
-							  <button type="submit" class="btn btn-default btn-sm">Search Reviews on map</button>
+							  <button type="submit" class="btn btn-default btn-sm">Search for Reviews</button>
 						  </form>
                   		  
 		          </div>    
@@ -184,7 +184,7 @@
 	//map.centerAndZoom(new BMap.Point(116.417854,39.921988), 15);
 	map.centerAndZoom(new BMap.Point(114, 34), 5);
 
-	document.getElementById("map").className="active";
+	//document.getElementById("map").className="active";
 
 	function mycity() {
 	    if(document.getElementById("field").value){
