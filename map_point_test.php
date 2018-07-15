@@ -586,6 +586,10 @@
 			var curCity = this._curCity;
 
 			div.onmouseover = function(){
+				div.style.cursor = "pointer";
+			};
+
+			div.onclick = function(){
 				var opts = {
 					//width : 280,     // 信息窗口宽度
 					//height: 112,     // 信息窗口高度
@@ -595,8 +599,7 @@
 					enableMessage:true,//设置允许信息窗发送短息
 					offset: new BMap.Size(10,-25)
 				};
-				//alert(content);
-				div.style.cursor = "pointer";	
+				//alert(content);	
 
 				var point = new BMap.Point(lng, lat);
 				var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
@@ -605,15 +608,6 @@
 				getBoundary(curCity);
 			};
 
-			
-
-			div.onclick = function(){
-				alert("Hello");
-
-				var mydiv = document.getElementById('getMap_point').innerHTML = '<form id="map_point"  action="map_point.php"><input name="lng" type="hidden" value="'+ lng +'" /><input name="lat" type="hidden" value="'+ lat +'" /></form>';
-				var f = document.getElementById('map_point');
-				if(f) { f.submit() };
-			};
 
 			//var arrow = this._arrow = document.createElement("div");
 			//arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
@@ -772,29 +766,6 @@
 		});
 	}
 
-	/*function getBoundary(city){       
-		var bdary = new BMap.Boundary();
-		bdary.get(city, function(rs){       //获取行政区域  
-			var count = rs.boundaries.length; //行政区域的点有多少个
-			if (count === 0) {
-				alert('未能获取当前输入行政区域');
-				return ;
-			}
-          	var pointArray = [];
-			for (var i = 0; i < count; i++) {
-				var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeColor: "#ff0000"}); //建立多边形覆盖物//new BMap.label("Hello");//
-				//ply.setStyle({ borderColor: "#999" });
-				map.addOverlay(ply);  //添加覆盖物
-				// pointArray = pointArray.concat(ply.getPath());
-
-				ply.addEventListener('mouseout', function(clickEvent) {
-					map.removeOverlay(ply);
-				});
-			}    
-			// map.setViewport(pointArray);    //调整视野                
-		});   
-	}*/
-
 	function isCityAvailable(city){
 		for(var i = 0; i < allCities.length; i++){
 			if(city == allCities[i][0]){
@@ -841,10 +812,7 @@
 						removeBoundary(city, ply);
 					});				
 				}  				
-			}
- 
-			//map.addOverlay(ply);  //添加覆盖物 
-			// map.setViewport(pointArray);    //调整视野               
+			}            
 		});   
 	}
 
