@@ -1,0 +1,1239 @@
+﻿//var topOffset; //用于table头部固定
+//var $tableOffset;
+$(function () {
+    setHtml();
+      // $("input[name=vv_history][value=2]").click();
+    if (!foreignSearch()) {//如果还未进行查询
+        getRecordsTableList(1);
+    }
+});
+//企业表现下所有栏目——换页
+function ser(pageIndex, pageSize) {
+ var index = $('#uitab_wrap .uitab-header li.current').index();//当前栏目序号
+        if(index==0)
+        {
+        var rnd=Math.random();
+             //弹出验证码
+            var content = "<div class='pop-receive'>        <div class='pop-file'><input style='border:1px solid #8d96a6' id='txtCode' type='text'/>&nbsp; <img src='/Plugin/CheckCode/MakeCode.aspx?tm="+rnd+" alt='点击刷新' onclick=\""
+            +"this.src='/Plugin/CheckCode/MakeCode.aspx?tm='+ Math.random()\""
+            +"/></div>          <div class='clearfix popwin-actions'>  <a href='javascript:void(0);' class='btn-sure '>确定</a> </div></div>";
+        var title = "验证码";
+
+
+        SubmitCheckCode(index, title, content,pageIndex);
+        }else{
+    getRecordsTableList(pageIndex);
+    }
+}
+//企业表现下所有栏目——获得列表
+function getRecordsTableList(pageIndex) {
+    var index = $('#uitab_wrap .uitab-header li.current').index();//当前栏目序号
+    var pageSize = $($('.sizes select')[index]).val(); //第index个的pageSize
+    var indusName = $('#search_input').val();
+    $('div.pagers').html('');
+    //前往某页页码设定
+    $('.input-small').val(pageIndex);
+
+//    if(index==1)
+//    {
+//       index=4;
+//    }
+//    else if(index>1)
+//    {   
+//        index=index-1;
+//    
+//    }
+
+    //按照index判别请求的是哪类数据
+    if (index == 0) {//监管记录
+       
+       $('#spanrecordcount').html('(加载中...)');
+        $('#hspanrecordcount').html('(加载中...)');
+        $('#table_con0 .table-main>.table-list tbody').html('<tr><td colspan="5">数据加载中...</td></tr>');
+        var hd_type = $('#hd_type').val();
+        if (hd_type == '1') {
+            $('#start_year_' + index).val('2015');
+            setEndYear_0();
+        }
+        var countryId = $('#country_'+index).val();
+        var provinceId = $('#province_'+index).val();
+        var cityId = $('#city_'+index).val();
+        var startYear = $('#start_year_'+index).val();
+        var endYear = $('#end_year_'+index).val();
+        var professionId = $('#industry_'+index).val();
+        var companyType = 0; //企业类型
+        var itemType = 0; //违规类型
+        var hasvg=0;
+        var fengxian = $('.filter.current .scree-opion input[name=fengxian]:checked').val();
+        if (!$('.filter.current .scree-opion input[name=enterprise][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=enterprise]').each(function () {
+                if ($(this).is(':checked')) {
+                    companyType += parseInt($(this).val());
+                }
+            });
+        }
+        if (!$('.filter.current .scree-opion input[name=violation][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=violation]').each(function () {
+                if ($(this).is(':checked')) {
+                    itemType += parseInt($(this).val());
+                }
+            });
+        }
+        if (!$('.filter.current .scree-opion input[name=hasvg][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=hasvg]').each(function () {
+                if ($(this).is(':checked')) {
+                    hasvg += parseInt($(this).val());
+                }
+            });
+        }
+             var ishistory=0;
+         if (!$('.filter.current .scree-opion input[name=vv_history][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=vv_history]').each(function () {
+                if ($(this).is(':checked')) {
+                    ishistory += parseInt($(this).val());
+                }
+            });
+        }
+        $.post('../data_ashx/GetAirData.ashx', { headers: { 'Cookie': document.cookie }, cmd: 'getRecords', pageSize: pageSize, pageIndex: pageIndex, countryId: countryId, provinceId: provinceId, cityId: cityId, startYear: startYear, endYear: endYear, professionId: professionId, itemType: itemType, companyType: companyType, indusName: indusName, fengxian: fengxian,ishistory:ishistory,hasvg:hasvg}, function (data) {
+            var jsonData = eval('(' + data + ')');
+           
+            if (jsonData.isSuccess == '200') {
+                window.location.href = window.location.href;
+            }
+            else if (jsonData.isSuccess == '1') {
+                $('#spanrecordcount').html(jsonData.recordCount);
+                $('#hspanrecordcount').html(jsonData.hrecordCount);
+
+                //$('.uitab-item.current').removeClass('current');
+                $('#table_con0 .table-main>.table-list tbody').html(unescape(jsonData.content)); //.parent('.uitab-item').addClass('current'); //添加总数及列表
+                $('div.pagers').html(jsonData.pager); //添加页码  全改了
+            }else if (jsonData.isSuccess == '2') {
+                $('#hspanrecordcount').html('0');
+                $('#table_con0 .table-main>.table-list tbody').html('<tr><td colspan="5">验证码错误</td></tr>');
+                $('div.pagers').html('');
+            }  else {
+                $('#spanrecordcount').html('0');
+                      $('#hspanrecordcount').html('0');
+                $('#table_con0 .table-main>.table-list tbody').html('<tr><td colspan="5">'+jsonData.Msg+'</td></tr>');
+                $('div.pagers').html('');
+            }
+            });
+
+
+     
+
+       
+
+      
+       
+    }
+    else if (index == 4) {//监管记录
+     //提示
+        $('#spanbmdcount').html('(加载中...)');
+        $('#table_con4 .table-main>.table-list tbody').html('<tr><td colspan="5">数据加载中...</td></tr>');
+        var hd_type = $('#hd_type').val();
+        if (hd_type == '1') {
+            $('#start_year_' + index).val('2015');
+            setEndYear_0();
+        }
+        var countryId = $('#country_'+index).val();
+        var provinceId = $('#province_'+index).val();
+        var cityId = $('#city_'+index).val();
+     
+        var professionId = $('#industry_'+index).val();
+
+        var companyType = 0; //企业类型
+       
+   
+        if (!$('.filter.current .scree-opion input[name=enterprise_4][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=enterprise_4]').each(function () {
+                if ($(this).is(':checked')) {
+                    companyType += parseInt($(this).val());
+                }
+            });
+        }
+
+         $.post('../data_ashx/GetAirData.ashx', { headers: { 'Cookie': document.cookie }, cmd: 'getBaiMingDan', pageSize: pageSize, pageIndex: pageIndex, countryId: countryId, provinceId: provinceId, cityId: cityId,  professionId: professionId, companyType: companyType, indusName: indusName}, function (data) {
+            var jsonData = eval('(' + data + ')');
+            if (jsonData.isSuccess == '200') {
+                window.location.href = window.location.href;
+            }
+            else if (jsonData.isSuccess == '1') {
+                $('#spanbmdcount').html(jsonData.recordCount);
+                //$('.uitab-item.current').removeClass('current');
+                $('#table_con4 .table-main>.table-list tbody').html(unescape(jsonData.content)); //.parent('.uitab-item').addClass('current'); //添加总数及列表
+                $('div.pagers').html(jsonData.pager); //添加页码  全改了
+            }else {
+                $('#spanbmdcount').html('0');
+                $('#table_con4 .table-main>.table-list tbody').html('<tr><td colspan="5">无数据</td></tr>');
+                $('div.pagers').html('');
+            }
+            
+        });
+       
+    }  else if (index == 1) {//自行监测数据
+        //提示
+        $('#selfrecordcount').html('(加载中...)');
+        $('#table_con1 .table-main>.table-list tbody').html('<tr><td colspan="5">数据加载中...</td></tr>');
+        var countryId = $('#country_' + index).val();
+        var provinceId = $('#province_' + index).val();
+        var cityId = $('#city_' + index).val();
+        var professionId = $('#industry_' + index).val();
+        var selfdata = $('.filter.current .scree-opion input[name=selfdatatype]:checked').val();
+        $.post('../data_ashx/GetAirData.ashx', { headers: { 'Cookie': document.cookie }, cmd: 'getselfrecords', selfData: selfdata, pageSize: pageSize, pageIndex: pageIndex, countryId: countryId, provinceId: provinceId, cityId: cityId, professionId: professionId, indusName: indusName }, function (data) {
+            var jsonData = eval('(' + data + ')');
+            if (jsonData.isSuccess == '200') {
+                window.location.href = window.location.href;
+            }
+            else if (jsonData.isSuccess == '1') {
+                $('#selfrecordcount').html(jsonData.recordCount);
+              //$('.uitab-item.current').removeClass('current');
+                $('#table_con1 .table-main>.table-list tbody').html(unescape(jsonData.content));//.parent('.uitab-item').addClass('current'); //添加总数及列表
+                $('div.pagers').html(jsonData.pager); //添加页码  页面中的全改了
+                //span的mouseover注册
+                spanMouseOver();
+            } else {
+                $('#selfrecordcount').html('0');
+                $('#table_con1 .table-main>.table-list tbody').html('<tr><td colspan="5">无数据</td></tr>');
+                $('div.pagers').html('');
+            }
+        });
+    } else if (index == 2) {//企业反馈
+        //提示
+        $('#feedbackcount').html('(加载中...)');
+        $('#table_con2 .table-main>.table-list tbody').html('<tr><td colspan="5">数据加载中...</td></tr>');
+        var hd_type = $('#hd_type').val();
+        if (hd_type == '1') {
+            $('#start_year_' + index).val('2015');
+            $('#start_month_' + index).val('1');
+            setEndYear_2();
+        }
+        var countryId = $('#country_' + index).val();
+        var provinceId = $('#province_' + index).val();
+        var cityId = $('#city_' + index).val();
+        var professionId = $('#industry_' + index).val();
+        var startYear = $('#start_year_' + index).val();
+        var endYear = $('#end_year_' + index).val();
+        var startMonth = $('#start_month_' + index).val();
+        var endMonth = $('#end_month_' + index).val();
+        var feedback = '';
+        if ($('.filter.current .scree-opion input[name=feedback][data-role=all]').is(':checked')) {
+            feedback = 'all';
+        } else {
+            $('.filter.current .scree-opion input[name=feedback]').each(function () {
+                if ($(this).is(':checked')) {
+                    feedback += $(this).val() + '_';
+                }
+            });
+            if (feedback == '') {
+                feedback = 'all';
+            }
+        }
+        $.post('../data_ashx/GetAirData.ashx', { headers: { 'Cookie': document.cookie }, cmd: 'getfeedback', pageSize: pageSize, pageIndex: pageIndex, countryId: countryId, provinceId: provinceId, cityId: cityId, professionId: professionId, startYear: startYear, endYear: endYear, startMonth: startMonth, endMonth: endMonth, feedback: feedback, indusName: indusName }, function (data) {
+            var jsonData = eval('(' + data + ')');
+            if (jsonData.isSuccess == '200') {
+                window.location.href = window.location.href;
+            }
+            else  if (jsonData.isSuccess == '1') {
+                $('#feedbackcount').html(jsonData.recordCount);
+                $('#table_con2 .table-main>.table-list tbody').html(unescape(jsonData.content));
+                $('div.pagers').html(jsonData.pager);
+            } else {
+                $('#feedbackcount').html('0');
+                $('#table_con2 .table-main>.table-list tbody').html('<tr><td colspan="5">无数据</td></tr>');
+                $('div.pagers').html('');
+            }
+        });
+    } else if (index == 3) {//排放数据
+        //提示
+        $('#prtrCount').html('(加载中...)');
+        var prtrTable = $('#table_con3 .table-main>.table-list tbody');
+        if (prtrTable.length > 0) {
+            prtrTable.html('加载中...');
+        } else {
+            $('#table_con3 .table-main').html('加载中...');
+        }
+        var hd_type = $('#hd_type').val();
+        if (hd_type == '1') {
+            $('#start_year_' + index).val('2015');
+            setEndYear_3();
+        }
+        var countryId = $('#country_' + index).val();
+        var provinceId = $('#province_' + index).val();
+        var cityId = $('#city_' + index).val();
+        var professionId = $('#industry_' + index).val();
+        var startYear = $('#start_year_' + index).val();
+        var endYear = $('#end_year_' + index).val();
+        var prtrData = $('.filter.current .scree-opion input[name=datatype]:checked').val();
+        var otherCondition = ''; //指标筛选之后添加
+        var sortStr = '';
+        var sortCondition = '';
+        if (prtrData != 'all-group') {
+            $('.tags a').each(function () {//指标
+                if ($(this).index() < 4) {
+                    var nowStr = $(this).attr('id');
+                    otherCondition += nowStr.substring(nowStr.indexOf('cb') + 2) + '__';
+                }
+            });
+            $('#table_con3 .table-column th a').each(function () {//排序
+                if ($(this).hasClass('sort-asc')) {
+                    sortStr += $(this).attr('value') + '__';
+                    sortCondition += 'asc__';
+                } else if ($(this).hasClass('sort-desc')) {
+                    sortStr += $(this).attr('value') + '__';
+                    sortCondition += 'desc__';
+                }
+            });
+        }
+        $.post('../data_ashx/GetAirData.ashx', { headers: { 'Cookie': document.cookie }, cmd: 'getPRTRData', pageIndex: pageIndex, pageSize: pageSize, countryId: countryId, provinceId: provinceId, cityId: cityId, professionId: professionId, startYear: startYear, endYear: endYear, prtrData: prtrData, otherCondition: otherCondition, indusName: indusName, sortStr: sortStr, sortCondition: sortCondition }, function (data) {
+            var jsonData = eval('(' + data + ')');
+            if (jsonData.isSuccess == '200') {
+                window.location.href = window.location.href;
+            }
+            else if (jsonData.isSuccess == '1') {
+                $('#prtrCount').parent().show();
+                $('#prtrCount').html(jsonData.recordCount);
+                $('#table_con3 .table-main').html(unescape(jsonData.content));
+                $('div.pagers').html(jsonData.pager);
+                topOffset = $('#uitab_con .uitab-item.current').find('.table-main .table-column').offset().top;//取当前tab页table-column的距离
+//                topOffset = $('#uitab_con .uitab-item.current').find('.table-main > .table-list').offset().top;
+                tableHeaderFixed();
+                tableSort();
+                prtrChartHover(); //绑定a的mouseover与mouseout
+            }else if(jsonData.isSuccess=='2'){
+                $('#prtrCount').parent().hide();
+                if(jsonData.recordCount=='0'){
+                     $('#table_con3 .table-main').html('共'+jsonData.recordCount+'家有'+jsonData.prtrData+'数据');
+                }else{
+                     $('#table_con3 .table-main').html('共'+jsonData.recordCount+'家有'+jsonData.prtrData+'数据，请选择'+jsonData.prtrData+'指标进行筛选');
+                }
+                $('div.pagers').html('');
+            }else {
+                $('#prtrCount').parent().show();
+                $('#prtrCount').html(0);
+                $('#table_con3 .table-main').html('无数据，请重新选择类型或指标进行检索');
+                $('div.pagers').html('');
+            }
+        });
+    }
+}
+//页面初始化
+function setHtml() {
+    //所有筛选按钮事件注册
+    $('.submit-btn').click(function () {
+        var index = $('#uitab_wrap .uitab-header li.current').index();//当前栏目序号
+        if(index==0)
+        {
+            RunCode(1);
+        
+        }
+        else
+        {
+            getRecordsTableList(1);
+        }
+    });
+    
+
+    //企业表现下所有栏目——前往某页
+    $('.button-small').click(function () {
+        //获得页码
+        var index = $('#uitab_wrap .uitab-header li.current').index();
+        var pageIndex = $($('.input-small')[index]).val();
+        var reg = /^\+?[1-9][0-9]*$/; //判断为非负非零整数
+        if (reg.test(pageIndex)) {
+            if(index==0)
+            {
+                RunCode(pageIndex);
+            }
+            else
+            {
+                getRecordsTableList(pageIndex);
+            }
+           
+        }
+    });
+    //企业表现下所有栏目——页数选择变化 从button-small中获得页码
+    $('.select-small').change(function () {
+        //获得当前页码
+        var index = $('#uitab_wrap .uitab-header li.current').index();
+        var pageIndex = $($('.input-small')[index]).val();
+        var reg = /^\+?[1-9][0-9]*$/; //判断为非负非零整数
+        if (reg.test(pageIndex)) {
+             if(index==0)
+            {
+                RunCode(pageIndex);
+            }
+            else
+            {
+                getRecordsTableList(pageIndex);
+            }
+        }
+    });
+    //公共搜索button
+    $('.complex.actions .button-primary').click(function () {
+        var index = $('#uitab_wrap .uitab-header li.current').index();//当前栏目序号
+
+       
+        if(index==0)
+        {
+              RunCode(1);
+        }
+        else
+        {
+            getRecordsTableList(1);
+        }
+    });
+    //各个标签页查看所有记录点击事件
+    $('#resetRecordForm').click(function () {
+        clearRecord();
+    });
+
+        $('#resetBaiMingdan').click(function () {
+        clearBaiMingdan();
+    });
+      $('#resetMonitorForm').click(function () {
+        clearSelf();
+    });
+    $('#resetFeedbackForm').click(function () {
+        clearFeedback();
+    });
+    $('#resetDischargeForm').click(function () {
+        clearPRTR();
+    });
+    //自行监测数据气初始被选
+    $('input[name=selfdatatype][value=all]').prop('checked', true).next('i').removeClass('icon-radio').addClass('icon-radio-checked');
+    radioChecked();
+//    $('#table_con1 .monitor-charsbox').mouseout(function (event) {
+//        event.stopPropagation();
+//        event.preventDefault();
+//        $('#table_con1 .monitor-charsbox').hide();
+//    });//先注释  之后考虑体验问题  鼠标离开图标之后图标消失(还未正常实现)
+    //排放数据筛选切换
+    $('input[name=datatype]').on('change', function () {
+        var prtrBtn=$('#prtrBtn');
+        prtrBtn.prev('br').remove();
+        initGroup();
+        var self = $(this);
+        if (self.val() != 'all-group') {//隐藏所有复选框，被点击项显示复选框
+            $('#resetDischargeForm').hide(); 
+            prtrBtn.before('<br/>');
+            var checkedArray = [0];
+            if (self.val() == 'other-group') {
+                checkedArray = [2];
+            }
+            //如果为空则加载指标数据
+            if ($('#' + self.val()).find('.c-select').length == 0) {
+                $.post('../data_ashx/GetAirData.ashx', { cmd: 'getprtrcheckbox', type: self.val() }, function (data) {
+                    var jsonData = eval('(' + data + ')');
+                    if (jsonData.isSuccess == '1') {
+                        $('#' + self.val()).children('.scree-region').html(unescape(jsonData.content));
+                        forPrtr();
+                        //默认选中前4个指标
+                        firFourCheckbox(self.val(),checkedArray);
+                        $('#table_con3 .table-main').html('数据加载中...');
+                        getRecordsTableList(1); //切换完成加载新数据
+                    } else {
+                        $('#' + self.val()).children('.scree-region').html('无指标');
+                        $('#table_con3 .table-main').html('数据加载中...');
+                        getRecordsTableList(1); //切换完成加载新数据
+                    }
+                });
+            } else {
+                //默认选中前4个指标
+                firFourCheckbox(self.val(),checkedArray);
+                $('#table_con3 .table-main').html('数据加载中...');
+                getRecordsTableList(1); //切换完成加载新数据
+            }
+            $('#' + self.val()).show();
+        } else {
+            $('#table_con3 .table-main').html('数据加载中...');
+            $('#resetDischargeForm').show();
+            getRecordsTableList(1); //切换完成加载新数据
+        }
+    });
+    //自行监测超标图表  左右按钮   加载指标和第一个监测点和第一个监测点的第一个指标的图标数据
+    $('.bx-prev').click(function () {
+        var indexNum = parseInt($('.bx-pager a.active').attr('data-slide-index'));
+        var prevs = $('.bx-pager a[data-slide-index=' + (indexNum - 1) + ']');
+        if (prevs.length > 0) {
+            $('.bx-pager a.active').removeClass('active');
+            prevs.addClass('active');
+            getIndexConfigOfNewPoint(0);
+            hideOrShowbx();
+        }
+    });
+    $('.bx-next').click(function () {
+        var indexNum = parseInt($('.bx-pager a.active').attr('data-slide-index'));
+        var prevs = $('.bx-pager a[data-slide-index=' + (indexNum + 1) + ']');
+        if (prevs.length > 0) {
+            $('.bx-pager a.active').removeClass('active');
+            prevs.addClass('active');
+            getIndexConfigOfNewPoint(0);
+            hideOrShowbx();
+        }
+    });
+    $('#table_con3 .discharge-charsbox').hide(); //排放数据放置chart的div隐藏
+    initGroup();//页面初始化隐藏放置排放数据指标的div
+    //表格顶部固定
+    //tableHeaderFixed();
+}
+
+
+function RunCode(pageIndex)
+{
+        var rnd=Math.random();
+             //弹出验证码
+            var content = "<div class='pop-receive'>        <div class='pop-file'><input style='border:1px solid #8d96a6' id='txtCode' type='text'/>&nbsp; <img src='/Plugin/CheckCode/MakeCode.aspx?tm="+rnd+" alt='点击刷新' onclick=\""
+            +"this.src='/Plugin/CheckCode/MakeCode.aspx?tm='+ Math.random()\""
+            +"/></div>          <div class='clearfix popwin-actions'>  <a href='javascript:void(0);' class='btn-sure '>确定</a> </div></div>";
+        var title = "验证码";
+     
+
+        SubmitCheckCode(0, title, content,pageIndex);
+}
+function foreignSearch() {
+    var isSearch = false;
+    //企业名称匹配
+    var GET = urlGet(); //获取URL的Get参数
+    var key = decodeURI(GET['key']); //取得id的值
+    if (key != undefined && key != '' && key != null && key != 'undefined') {
+        $('#search_input').val(key);
+    }
+    //指定tab页
+    var index = decodeURI(GET['index']);
+    if (index != undefined && index != '' && index != null && index != 'undefined') {
+        if (!isNaN(parseInt(index))) {
+            index = parseInt(index);
+            var theme = 'current';
+            $('#uitab_wrap .uitab-header li.current').removeClass(theme);
+            $('#uitab_wrap .uitab-header li').eq(index).addClass(theme);
+
+            $('#uitab_wrap .filter.current').removeClass(theme);
+            $('#uitab_wrap .filter').eq(index).addClass(theme);
+
+            $('#uitab_con .uitab-item.current').addClass('dn').removeClass(theme);
+            $('#uitab_con .uitab-item').eq(index).addClass(theme);
+            //判断prtr是否被选
+            if (index == 3) {
+                var isPrtr = parseInt(decodeURI(GET['isPrtr']));//从url获取
+                if (isPrtr == 1) {
+                    isSearch = true;
+                    var type = 'prtr-group';
+                    var checkedArray = [0];
+                    $('#prtrBtn').before('<br/>');
+                    $('input[name=datatype]:checked').prop('checked', false).next('i').removeClass('icon-radio-checked').addClass('icon-radio');
+                    $('input[name=datatype][value=' + type + ']').prop('checked', true).next('i').removeClass('icon-radio').addClass('icon-radio-checked');
+                    if ($('#' + type).find('.c-select').length == 0) {
+                        $.post('../data_ashx/GetAirData.ashx', { cmd: 'getPRTRCheckbox', type: type }, function (data) {
+                            var jsonData = eval('(' + data + ')');
+                            if (jsonData.isSuccess == '1') {
+                                $('#' + type).children('.scree-region').html(unescape(jsonData.content));
+                                 $('#' + type).show();
+                                forPrtr();
+                                //默认选中前4个指标
+                                firFourCheckbox(type,checkedArray);
+                            } else {
+                                $('#' +type).children('.scree-region').html('无指标');
+                            }
+                            getRecordsTableList(1);
+                        });
+                    }
+                }
+            }
+        }
+    }
+    return isSearch;
+}
+//监管记录 跳转至详情页
+function locationUrl(companyId, dataType) {
+    var hd_type = $('#hd_type').val();
+    window.open('regulatory-record.aspx?companyId=' + companyId + '&dataType=' + dataType + '&isyh=' + hd_type);
+}
+//自行监测、企业反馈 跳转至详情页
+function locationUrl_self(companyId, dataType, selfdata,companyIdCJ) {
+    var hd_type = $('#hd_type').val();
+    window.open('regulatory-record.aspx?companyId=' + companyId + '&companyIdCJ=' + companyIdCJ + '&dataType=' + dataType + '&selfdata=' + selfdata + '&isyh=' + hd_type);
+}
+function locationUrl_feedback(companyId, dataType, selfdata) {
+    var hd_type = $('#hd_type').val();
+    window.open('regulatory-record.aspx?companyId=' + companyId + '&dataType=' + dataType + '&selfdata=' + selfdata + '&isyh=' + hd_type);
+}
+//排放数据 跳转到详情页
+function locationUrl_PRTR(companyId, dataId, dataType, selfdata) {
+    var hd_type = $('#hd_type').val();
+    window.open('regulatory-record.aspx?companyId=' + companyId + '&dataType=' + dataType + '&selfdata=' + selfdata + '&dataId=' + dataId + '&isyh=' + hd_type);
+}
+//排放数据复选框设置
+function forPrtr() {//复选框事件注册
+    $('.c-select').off('change', 'input[type=checkbox]'); //所有复选框取消change事件
+    var max = 4, min = 0;
+    $('.c-select').on('change', 'input[type=checkbox]', function () {
+        if ($('.c-select input[type=checkbox]:checked').length == max) {
+            $('.c-select input[type=checkbox]').not(':checked').attr('disabled', 'true'); //当有四个指标被选,其余指标不可选
+        } else {
+            $('.c-select input[type=checkbox]').removeAttr('disabled');
+        }
+        var _this = $(this), id = _this.attr('id'),
+        //groupName = _this.parent().parent().parent().children().eq(0).text(), //sub-checkbox-menu
+        groupName = _this.closest('.sub-checkbox-menu').prev('a').text(),
+        name = _this.parent().text();
+        if (_this.is(':checked')) {
+            _this.next('i').removeClass('icon-checkbox').addClass('icon-checkbox-checked');
+            addTag(id, groupName, name);
+        } else {
+            _this.next('i').removeClass('icon-checkbox-checked').addClass('icon-checkbox');
+            removeTag(id);
+        }
+        getRecordsTableList(1); //tag增减加载新数据
+        var _textbox = _this.parent().parent().prev();
+        if ($('input:checked', $(_this.parent().parent())).length > 0) {
+            _textbox.addClass('hasChecked');
+        } else {
+            _textbox.removeClass('hasChecked');
+        }
+    });
+}
+//默认选中前4个
+function firFourCheckbox(idVal, checkedArray) {
+    for (var i = 0; i < checkedArray.length; i++) {
+        var nowObj = $($('#' + idVal + ' .scree-region .c-select input[type=checkbox]')[checkedArray[i]]);
+        var id = nowObj.attr('id');
+        //var groupName = nowObj.parent().parent().parent().children().eq(0).text();
+        var groupName = nowObj.closest('.sub-checkbox-menu').prev('a').text();
+        var name=nowObj.parent().text();
+        nowObj.prop('checked', true).next('i').removeClass('icon-checkbox').addClass('icon-checkbox-checked');
+        addTag(id, groupName, name);
+    }
+    if (checkedArray.length >= 4) {
+        $('.c-select input[type=checkbox]').not(':checked').attr('disabled', 'true');
+    }
+    $('#'+idVal+' .c-select a.select').eq(0).addClass('hasChecked');
+}
+
+//--------------------排放数据筛选切换所需函数  start
+function initCheckboxGroup() {
+    $('.c-select input[type=checkbox]').removeAttr('disabled checked');
+    $('.c-select i.icon-checkbox-checked').removeClass('icon-checkbox-checked').addClass('icon-checkbox');
+    $('.c-select a.hasChecked').removeClass('hasChecked');
+};
+function groupHide() {
+    $('.data-checkbox-group').hide();
+};
+//排放数据重置数据类型选项
+function initGroup() {
+    initCheckboxGroup(); //所有复选框恢复可选
+    groupHide(); //隐藏所有复选框
+    reomveAllTag(); //移除所有tag 
+};
+//--------------------排放数据筛选切换所需函数  end
+
+
+//-----------------排放数据tag与tag变化对复选框的效果  start
+//handler checkbox  
+function groupCheckUnSelected(id) {
+    var max = 4;
+    if ($('.c-select input[type=checkbox]:checked').length == max) {
+        $('.c-select input[type=checkbox]').removeAttr('disabled'); //当移除选中指标后，复选框全变为可选状态
+    }
+    var _checkbox = $('#' + id)
+    _checkbox.removeAttr('checked');
+    _checkbox.next().attr('class', 'icon icon-checkbox');
+}
+
+//handler Tag
+//var $tagsBox = $('.tags-box');
+//var $tags = $('.tags-box').find('.tags');
+//var $tag_selected = $('.tags-box').find('#tag_selected');
+//var tagStr = '<a href="javascript:;" class="tag" id="tag_{{id}}">{{groupName}}:{{name}}</a> ';
+
+function addTag(id, groupName, name) {
+    //添加指定指标
+    var max = 4;
+    var tagStr = '<a href="javascript:;" class="tag" id="tag_{{id}}">{{groupName}}：{{name}}</a> ';
+    var newTag = tagStr.replace(/{{id}}/g, id).replace(/{{groupName}}/g, groupName).replace(/{{name}}/g, name);
+    $('.tags-box').find('.tags').append($(newTag));
+    //$('.tags-box').find('#tag_selected').html(max - $('.tags-box').find('.tags').children().length);
+    if ($('.tags-box').is(':hidden')) { $('.tags-box').show(); }
+}
+function removeTag(id) {
+    //移除指定指标
+    var max = 4;
+    $('.tags-box').find('.tags').find('#tag_' + id).remove();
+    //$('.tags-box').find('#tag_selected').html(max - $('.tags-box').find('.tags').children().length);
+    if ($('.tags-box').find('.tags').children().length == 0) { $('.tags-box').hide(); }
+};
+function reomveAllTag(id) {
+    //移除被选中的指标
+    var max = 4;
+    $('.tags-box').find('.tags').html('');
+    //$('.tags-box').find('#tag_selected').html(max);
+    $('.tags-box').hide();
+};
+
+$('.tags-box').find('.tags').on('click', 'a', function () {
+    // 'tag_' 字符4
+    var id = $(this).attr('id').substr(4);
+    removeTag(id);
+    groupCheckUnSelected(id); //复选框全变为可选状态
+    getRecordsTableList(1);//tag移除加载新数据
+})
+//-----------------排放数据tag与tag变化对复选框的效果  end
+
+//-----------------排放数据图表  start
+function prtrChartHover() {
+    $('#table_con3 .table-list .show-chart').hover(function () {
+        $('#table_con3 #container2').html('加载中...');
+        //图表数据
+        var figVal = $(this).attr('figVal');
+        var figName = $(this).attr('figName');
+        $.post('../data_ashx/GetAirData.ashx', { cmd: 'getPRTRChartByConfig', figVal: figVal }, function (data) {
+            var jsonData = eval('(' + data + ')');
+            if (jsonData.isSuccess == '1') {
+                prtrChartShow(jsonData.years, figName, jsonData.data,jsonData.unitStr);
+            }
+        });
+        var $chartbox = $('#table_con3 .discharge-charsbox');
+        var offset = $(this).offset(), footerOffset = $('#common_footer').offset(), chartboxHeight = 310;
+        if (offset.top < footerOffset.top - chartboxHeight) {
+            $chartbox.show().offset({ top: offset.top + 60, left: offset.left - 260 }).removeClass('arrow-down');
+        } else {
+            $chartbox.show().offset({ top: (offset.top - 30 - chartboxHeight), left: offset.left - 260 }).addClass('arrow-down');
+        }
+    }, function () {
+        $('#table_con3 .discharge-charsbox').hide();
+        $('#table_con3 #container2').html('加载中...');
+    });
+}
+
+//            window.setTimeout(function () {
+//                $('#table_con3 .discharge-charsbox').hide();
+//            }, 1000)//这是干嘛的
+function prtrChartShow(categories,text, data,unitStr) {//数组参数//============================div偏离==已正常=================
+    var highchartsDefaultOption = {
+        chart: {
+            type: 'area'
+        },
+        title: {
+            text: text + '历年数据折线图',
+            align: 'left'
+        },
+        subtitle: {
+            text: '单位：'+unitStr,
+            align: 'right',
+            useHTML:true
+        },
+        legend: {
+            enabled: false
+        },
+        xAxis: {
+            categories: categories
+        },
+        yAxis: {
+            title: null,
+//            plotLines: [{
+//                color: 'red',
+//                width: 2,
+//                value: 150
+//            }]
+
+        },
+        plotOptions: {
+            series: {
+                lineColor: '#8fa3b6',
+                fillColor: {
+                    linearGradient: [0, 0, 0, 250],
+                    stops: [
+                                [0, 'rgba(167,190,231,1)'],
+                                [1, 'rgba(167,190,231,0)']
+                            ]
+                }
+                //                },
+                //                marker: {
+                //                    enabled: false
+                //                }
+            }
+        }
+    }
+    //$('#table_con3 #container2').children().remove();
+    $('#table_con3 #container2').highcharts(
+                $.extend(highchartsDefaultOption, {
+                    series: [{
+                        data: data
+                    }]
+                })
+            );
+}
+//-----------------排放数据图表  end
+
+//----------------自行监测事件 start
+//function directionClick(monitorId) {
+//    $('.bx-pager a').each(function () {
+//        if ($(this).attr('monitorId') == monitorId) {
+//            $('.bx-pager a.active').removeClass('active');
+//            $(this).addClass('active');
+//        }
+//    });
+//    getIndexConfigOfNewPoint(0);
+//}
+function pagerClick(monitorId) {//用于图标底部点的样式变化
+    $('.bx-pager a').each(function () {
+        if ($(this).attr('monitorId') == monitorId) {
+            $('.bx-pager a.active').removeClass('active');
+            $(this).addClass('active');
+            getIndexConfigOfNewPoint(0);
+        }
+    });
+}
+function zhibiaoClick(zhibiao) {
+    //    $('.ui-tabs-nav li a[]'
+    //ui-tabs-active ui-state-active
+    $('.ui-state-default.ui-corner-top.ui-tabs-active.ui-state-active').removeClass('ui-tabs-active').removeClass('ui-state-active');
+    $('.ui-state-default.ui-corner-top[zhibiao=' + zhibiao + ']').addClass('ui-tabs-active').addClass('ui-state-active');
+    var monitorId = $('.bx-pager .bx-pager-item a.active').attr('monitorId');
+    var companyId = $('.bx-pager .bx-pager-item a.active').attr('companyId');
+    var nowzhibiao = $('.ui-tabs-nav li.ui-tabs-active a').attr('zhibiao');
+    var monitorName = $('.bx-pager .bx-pager-item a.active').attr('monitorName');
+    var zhibiaoName = $('.ui-tabs-nav li.ui-tabs-active a').attr('zhibiaoName');
+    var selfdata = $('.bx-pager .bx-pager-item a.active').attr('selfdata');
+    $.post('../data_ashx/GetAirData.ashx', { cmd: 'getSelfType_chart', companyId: companyId, monitorId: monitorId, zhibiao: nowzhibiao, zhibiaoName: zhibiaoName, monitorName: monitorName, selfdata: selfdata }, function (data) {
+        var thirJsonData = eval('(' + data + ')');
+        if (thirJsonData.isSuccess == '1') {
+            showGraph_eg(thirJsonData.valueStr, thirJsonData.dateStr, thirJsonData.zhibiaoName, thirJsonData.standardValue, thirJsonData.lastDate, thirJsonData.fUnit,thirJsonData.selfdata, thirJsonData.monitorName, thirJsonData.monitorShortName);
+        }
+    });
+}
+function getIndexConfigOfNewPoint(zhibiao) {//除了滑过超标，其他zhibiao参数传入为0
+    $('.ui-tabs-nav').html('');
+    $('#selfTitle').html('');
+    $('#selfchartbox').html('');
+    //取得当前监测点的所有指标  在底部圆点处
+    var monitorId = $('.bx-pager .bx-pager-item a.active').attr('monitorId');
+    var selfdata = $('.bx-pager .bx-pager-item a.active').attr('selfdata');
+    var companyId = $('.bx-pager .bx-pager-item a.active').attr('companyId');
+    var monitorName = $('.bx-pager .bx-pager-item a.active').attr('monitorName');
+    $.post('../data_ashx/GetAirData.ashx', { cmd: 'getSelfType', companyId: companyId, monitorId: monitorId, zhibiao: zhibiao, selfdata: selfdata, monitorName: monitorName }, function (data) {
+        var secJsonData = eval('(' + data + ')');
+        if (secJsonData.isSuccess == '1') {
+            $('.ui-tabs-nav').html(unescape(secJsonData.content)); //呈现当前监测点的指标
+            //加载指定监测点指定指标图表数据(优先加载超标监测点的超标指标图表数据)
+            var nowzhibiao = $('.ui-tabs-nav li.ui-tabs-active a').attr('zhibiao');
+            var zhibiaoName = $('.ui-tabs-nav li.ui-tabs-active a').attr('zhibiaoName');
+            $.post('../data_ashx/GetAirData.ashx', { cmd: 'getSelfType_chart', companyId: companyId, monitorId: monitorId, zhibiao: nowzhibiao, zhibiaoName: zhibiaoName, monitorName: monitorName, selfdata: selfdata }, function (data) {
+                var thirJsonData = eval('(' + data + ')');
+                if (thirJsonData.isSuccess == '1') {
+                    showGraph_eg(thirJsonData.valueStr, thirJsonData.dateStr, thirJsonData.zhibiaoName, thirJsonData.standardValue, thirJsonData.lastDate, thirJsonData.fUnit,thirJsonData.selfdata, thirJsonData.monitorName, thirJsonData.monitorShortName); //返回的数据已对是否查询成功做了判断
+                }
+            });
+        } else {
+            showGraph_eg('', '', '', '', '', '','','','');//监测点下没有指标
+        }
+        hideOrShowbx();
+    });
+}
+function spanMouseOver() {//鼠标滑过超标 span
+//    $('#table_con1 .table-main span').mouseover(function () {
+    $('#table_con1 .table-main').on('mouseover', 'span', function () {
+        var companyId = $(this).attr('companyId');
+        var monitorId = $(this).attr('monitorId');
+        var zhibiao = $(this).attr('zhibiao');
+        var selfdata = $(this).attr('selfdata');
+        $.post('../data_ashx/GetAirData.ashx', { cmd: 'getSelfPoints', companyId: companyId, selfdata: selfdata, monitorId: monitorId }, function (data) {
+            var jsonData = eval('(' + data + ')');
+            if (jsonData.isSuccess == '1') {
+                //取得当前企业的所有监测点id
+                $('.bx-pager').html(unescape(jsonData.content));
+                //$('.bx-controls-direction').html(unescape(jsonData.direction)); //事件在结果返回时已绑定
+                getIndexConfigOfNewPoint(zhibiao);
+            } else {
+                showGraph_eg('', '', '', '', '', '', '', '', ''); //没有监测点
+            }
+            hideOrShowbx(); //两侧箭头的设置
+        });
+        var $chartbox = $('#table_con1 .monitor-charsbox');
+        var offset = $(this).parent().parent().offset(), footerOffset = $('#common_footer').offset(), chartboxHeight = 486;
+        if (offset.top < footerOffset.top - chartboxHeight) {
+            $chartbox.show().offset({ top: offset.top + 60, left: offset.left }).removeClass('arrow-down');
+        } else {
+            $chartbox.show().offset({ top: (offset.top - chartboxHeight), left: offset.left }).addClass('arrow-down');
+        }
+    });
+    $('#table_con1 .table-main span').mouseout(function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    });
+    $('#table_con1 .monitor-charsbox').mouseout(function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    });
+    $('#table_con1 .table-main tr').mouseout(function (event) {
+        $('#table_con1 .monitor-charsbox').hide();
+    });
+//    }).mouseout(function () {
+//        event.stopPropagation();//阻止冒泡
+//        event.preventDefault();//防止默认行为
+//    });
+//    $('#table_con1 .table-main tr').mouseout(function (event) {
+//        $('#table_con1 .monitor-charsbox').hide();
+//    });
+}
+function radioChecked() {
+    $('label.selfdatatype').click(function () {
+        $('input[name=selfdatatype]:checked').prop('checked',false).next('i').removeClass('icon-radio-checked').addClass('icon-radio');
+        $(this).children('input[name=selfdatatype]').prop('checked', true).next('i').removeClass('icon-radio').addClass('icon-radio-checked');
+    });
+
+    $('label.fengxian').click(function () {
+        $('input[name=fengxian]:checked').prop('checked', false).next('i').removeClass('icon-radio-checked').addClass('icon-radio');
+        $(this).children('input[name=fengxian]').prop('checked', true).next('i').removeClass('icon-radio').addClass('icon-radio-checked');
+    });
+
+
+}
+//----------------自行监测事件 end
+//清空所有所有条件
+function clearRecord() {
+    $('#country_0').val('1');
+    $('#province_0').val('-1');
+    $('#city_0').val('-1');
+    $('#start_year_0').val('-1');
+    $('#end_year_0').val('-1');
+    $('#industry_0' ).val('1');
+    $('.filter.current .scree-opion input[name=enterprise]').prop('checked',true).next('i').removeClass('icon-checkbox').addClass('icon-checkbox-checked');
+    $('.filter.current .scree-opion input[name=violation]').prop('checked', true).next('i').removeClass('icon-checkbox').addClass('icon-checkbox-checked');
+    $('#search_input').val('');   
+    getRecordsTableList(1);
+}
+function clearBaiMingdan() {
+    $('#country_4').val('1');
+    $('#province_4').val('-1');
+    $('#city_4').val('-1');
+ 
+    $('#industry_4' ).val('1');
+    $('.filter.current .scree-opion input[name=enterprise_4]').prop('checked',true).next('i').removeClass('icon-checkbox').addClass('icon-checkbox-checked');
+ 
+    $('#search_input').val('');   
+    getRecordsTableList(1);
+}
+
+function clearSelf() {
+    $('#country_1').val('1');
+    $('#province_1').val('-1');
+    $('#city_1').val('-1');
+    $('#industry_1').val('1');
+    $('#search_input').val('');
+    getRecordsTableList(1);
+}
+function clearFeedback() {
+    $('#country_2').val('1');
+    $('#province_2').val('-1');
+    $('#city_2').val('-1');
+    $('#industry_2').val('1');
+    $('#start_year_2').val('-1');
+    $('#end_year_2').val('-1');
+    $('#start_month_2').val('-1');
+    $('#end_month_2').val('-1');
+    $('.filter.current .scree-opion input[name=feedback]').prop('checked', true).next('i').removeClass('icon-checkbox').addClass('icon-checkbox-checked');
+    $('#search_input').val('');
+    getRecordsTableList(1);
+}
+function clearPRTR() {
+    $('#country_3').val('1');
+    $('#province_3').val('-1');
+    $('#city_3').val('-1');
+    $('#industry_3').val('1');
+    $('#start_year_3').val('-1');
+    $('#end_year_3').val('-1');
+    $('#search_input').val('');
+    getRecordsTableList(1);
+}
+//表格顶部固定
+function tableHeaderFixed() {
+    $table = $('.table-column');
+    $(window).unbind('scroll');
+    $(window).scroll(function () {
+        if (!$table || !$table.length) { return; }
+        var st = $(this).scrollTop();
+        if (st > topOffset) {
+            $table.addClass('table-fixed');
+        } else {
+            $table.removeClass('table-fixed');
+        }
+    });
+}
+//排放数据排序样式
+function tableSort() {
+    var sortType = ['sort-none', 'sort-asc', 'sort-desc', 'sort-none'];
+    $('.table-column').on('click', '.sort-btn', function () {
+        for (var typeIndex in sortType) {
+            if ($(this).hasClass(sortType[typeIndex])) {
+                $('.table-column .sort-btn').not($(this)).attr('class', 'sort-btn sort-none');
+                $(this).removeClass(sortType[typeIndex]).addClass(sortType[typeIndex - 0 + 1]);
+                // 添加需求 有排序的这列文字修改颜色
+                $('.table-list .sort-text').removeClass('sort-text');
+                if (!$(this).hasClass('sort-none')) {
+                    $('td:nth-child(' + ($(this).parent().index() + 1) + ')',
+                                $(this).parents('.table-column').next()).addClass('sort-text');
+                }
+                break;
+            }
+        }
+        getRecordsTableList(1);
+    });
+}
+//自行监测鼠标滑过查表显示图表
+function showGraph_eg(valueStr, dateStr, zhibiaoName, standard, lastDate, fUnit, selfdata, monitorName, monitorShortName) {
+    //判断单位
+    if (fUnit != ''&&fUnit!=undefined&&fUnit!=null) {
+        $('#fUnit').html('单位：' + fUnit);
+    } else {
+        $('#fUnit').html('');
+    }
+    //判断标题
+    if (monitorName != '' && monitorName != undefined && monitorName != null) {
+        var chartname = '';
+        if (selfdata == 'air') {
+            chartname = '废气中污染物30天日均值趋势图';
+        } else if (selfdata == 'water') {
+            chartname = '废水中污染物30天日均值趋势图';
+        } else {
+            chartname = '污染物30天日均值趋势图';
+        }
+        $('#selfTitle').attr('title', monitorName).html(monitorShortName + ':' + chartname);
+    } else {
+        $('#selfTitle').html('');
+    }
+    //判断显示的数据
+    if (valueStr == '' || dateStr == '') {
+        $('#selfchartbox').html('').css('border', '0px');
+        $('.ui-tabs-nav').html('无30天日均值数据');
+    } else {
+        $('#selfchartbox').css('border', '1px');
+        var myChart = echarts.init(document.getElementById('selfchartbox'));
+        var option = {
+            tooltip: {
+                show: true
+            },
+            legend: {
+                data: [zhibiaoName]
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: dateStr
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+                series: [
+                {
+                    name: zhibiaoName,
+                    type: 'line',
+                    data: valueStr,
+                    markLine: {
+                        data: [
+                                 [
+                                    { name: '标准线', value: standard, xAxis: -1, yAxis: standard },//基准线起点
+                                    { name: '标准线', xAxis: lastDate, yAxis: standard }//基准线终点
+                                ]
+                                ]
+                    }
+                }
+            ]
+            };
+            // 为echarts对象加载数据 
+            myChart.setOption(option);
+    }
+}
+
+//function getCodePage() {
+//    var index = $('#uitab_wrap .uitab-header li.current').index();
+//    $('#qrcodeEN').html('');
+//    $('#qrcodeCH').html('');
+//    $('#qrcodeEN').qrcode({ width: 142, height: 142, correctLevel: 0, render: 'table', text: window.location.href + '?index=' + index });
+//    $('#qrcodeCH').qrcode({ width: 142, height: 142, correctLevel: 0, render: 'table', text: window.location.href+'?index='+index });
+//}
+//判断自行监测超标图表两侧箭头
+function hideOrShowbx() {
+    var prevsCount = $('.bx-pager a').length;
+    if (prevsCount == 0||prevsCount==1) {
+        $('.bx-prev').hide();
+        $('.bx-next').hide();
+    } else if (prevsCount == 2) {
+        var indexNum = parseInt($('.bx-pager a.active').attr('data-slide-index'));
+        if (parseInt(indexNum) == 1) {
+            $('.bx-prev').hide();
+            $('.bx-next').show();
+        } else {
+            $('.bx-prev').show();
+            $('.bx-next').hide();
+        }
+    } else {
+        var indexNum = parseInt($('.bx-pager a.active').attr('data-slide-index'));
+        if (parseInt(indexNum) == 1) {
+            $('.bx-prev').hide();
+            $('.bx-next').show();
+        } else if (parseInt(indexNum) == prevsCount) {
+            $('.bx-prev').show();
+            $('.bx-next').hide();
+        } else {
+            $('.bx-prev').show();
+            $('.bx-next').show();
+        }
+    }
+}
+//tab显示条数
+function getRecordCountOfTab(tabIndex) {
+    var tabArray = [0, 1, 2, 3];
+    $('#uitab_wrap .uitab-header li em').remove();
+    tabArray(tabIndex, 1);
+    $.post('data_ashx/GetAirData.ashx', { tabArray: tabArray }, function (data) {
+        var tabs = $('#uitab_wrap .uitab-header li');
+        var jsonData = eval('(' + data + ')');
+        for (var i = 0; i < tabArray.length; i++) {
+            tabs.eq(tabArray[i]).append('<em>'+jsonData[i]+'</em>');
+        }
+    });
+}
+
+var PopCheckCode=null;
+//提交验证码搜索监管记录
+function SubmitCheckCode(index,title,content,pageIndex){
+	    //提示
+        $('#spanrecordcount').html('(加载中...)');
+        $('#hspanrecordcount').html('(加载中...)');
+        $('#table_con0 .table-main>.table-list tbody').html('<tr><td colspan="5">数据加载中...</td></tr>');
+        var hd_type = $('#hd_type').val();
+        if (hd_type == '1') {
+            $('#start_year_' + index).val('2015');
+            setEndYear_0();
+        }
+        var pageSize = $($('.sizes select')[index]).val(); 
+         var indusName = $('#search_input').val();
+        var countryId = $('#country_'+index).val();
+        var provinceId = $('#province_'+index).val();
+        var cityId = $('#city_'+index).val();
+        var startYear = $('#start_year_'+index).val();
+        var endYear = $('#end_year_'+index).val();
+        var professionId = $('#industry_'+index).val();
+        var companyType = 0; //企业类型
+        var itemType = 0; //违规类型
+        var hasvg=0;
+        var fengxian = $('.filter.current .scree-opion input[name=fengxian]:checked').val();
+        if (!$('.filter.current .scree-opion input[name=enterprise][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=enterprise]').each(function () {
+                if ($(this).is(':checked')) {
+                    companyType += parseInt($(this).val());
+                }
+            });
+        }
+        if (!$('.filter.current .scree-opion input[name=violation][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=violation]').each(function () {
+                if ($(this).is(':checked')) {
+                    itemType += parseInt($(this).val());
+                }
+            });
+        }
+        if (!$('.filter.current .scree-opion input[name=hasvg][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=hasvg]').each(function () {
+                if ($(this).is(':checked')) {
+                    hasvg += parseInt($(this).val());
+                }
+            });
+        }
+             var ishistory=0;
+         if (!$('.filter.current .scree-opion input[name=vv_history][data-role=all]').is(':checked')) {
+            $('.filter.current .scree-opion input[name=vv_history]').each(function () {
+                if ($(this).is(':checked')) {
+                    ishistory += parseInt($(this).val());
+                }
+            });
+        }
+         
+         
+        //   
+//        $("input[name=vv_history]").each(function(){
+//           
+//         if($(this).is(':checked'))
+//        {
+//   
+//           ishistory=ishistory+ parseInt( $(this).val());
+//        }
+//        })
+         PopCheckCode = new Popwin({
+        data: {
+            title: title,
+            content: content
+        },
+        _theme: "modify-password",
+        //确定按钮事件
+        onsure: function () {
+        var code=$("#txtCode").val();
+        //$(".pop-win").html('');
+        $(".pop-win").hide();
+        $(".pop-win").remove();
+            
+             
+            $.post('../data_ashx/GetAirData.ashx', { headers: { 'Cookie': document.cookie }, cmd: 'getRecords', pageSize: pageSize, pageIndex: pageIndex, countryId: countryId, provinceId: provinceId, cityId: cityId, startYear: startYear, endYear: endYear, professionId: professionId, itemType: itemType, companyType: companyType, indusName: indusName, fengxian: fengxian,ishistory:ishistory,hasvg:hasvg,code:code,hasCode:1 }, function (data) {
+            var jsonData = eval('(' + data + ')');
+           
+            if (jsonData.isSuccess == '200') {
+                window.location.href = window.location.href;
+            }
+            else if (jsonData.isSuccess == '1') {
+
+               if(jsonData.recordCount=='0')
+               {
+                  $('#industry_id').hide();
+               }
+               else
+               {
+                $('#spanrecordcount').html(jsonData.recordCount);
+                }
+
+                
+                $('#hspanrecordcount').html(jsonData.hrecordCount);
+
+                //$('.uitab-item.current').removeClass('current');
+                $('#table_con0 .table-main>.table-list tbody').html(unescape(jsonData.content)); //.parent('.uitab-item').addClass('current'); //添加总数及列表
+                $('div.pagers').html(jsonData.pager); //添加页码  全改了
+            }else if (jsonData.isSuccess == '2') {
+                $('#spanrecordcount').html('0');
+                $('#hspanrecordcount').html('0');
+                $('#table_con0 .table-main>.table-list tbody').html('<tr><td colspan="5">验证码错误</td></tr>');
+                $('div.pagers').html('');
+            } 
+            else {
+                $('#spanrecordcount').html('0');
+                      $('#hspanrecordcount').html('0');
+                $('#table_con0 .table-main>.table-list tbody').html('<tr><td colspan="5">'+jsonData.Msg+'</td></tr>');
+                $('div.pagers').html('');
+            }
+             
+        });
+            
+             
+        },
+        oncancel: function () {
+            $(".pop-win").hide();
+//            new_prtr_1.show();
+        },
+        //确定中断操作接口
+        onabort: function () {
+            this.setMemory(false); //移除记忆模式
+            //做其他事
+        },
+        //取消中断接口
+        onabortcancel: function () {
+            //this.show(); //再打开
+            this.setMemory(false); //移除记忆模式
+        },
+        onclose: function () {
+            //history.go(0);
+        }
+    });
+    PopCheckCode.show();
+}
+

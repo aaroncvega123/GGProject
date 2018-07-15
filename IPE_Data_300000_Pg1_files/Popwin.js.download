@@ -1,0 +1,64 @@
+(function(){
+    var template = '<div class="pop-win"><div class="pop-cover"></div><div class="pop-con"><div class="pop-header"><a href="javascript:void(0);" class="pop-close"><i class="icon icon-close"></i></a><h1><%= title %></h1></div><div class="pop-body clearfix"><%= content %></div></div></div>';
+
+    var $body = $("body");
+    var _bodyOverflow = {};
+
+    var hiddenBody = function(){
+        _bodyOverflow = {
+            x:$body.css("overflow-x"),
+            y:$body.css("overflow-y")
+        };
+        $body.css("overflow","hidden");
+    };
+
+    var resetOverflow = function(){
+        $body.css("overflow-x",_bodyOverflow.x);
+        $body.css("overflow-y",_bodyOverflow.y);
+        _bodyOverflow = {};
+    };
+
+
+    var Popwin = _.inherit(Basic,{
+        template: _.getTemplateByHtml(template),
+        events:{
+            onRender:function(){
+                this.onElementEvent("click",".pop-close",function(){
+                    this.hide();
+                    this.triggerEvent("onclose");
+                });
+
+                this.onElementEvent("click",".popwin-actions .btn-cancel",function(){
+                    this.triggerEvent("oncancel");
+                    this.hide();
+                });
+
+                this.onElementEvent("click",".popwin-actions .btn-sure",function(){
+                    if(this.triggerEvent("onsure") !== false){
+                    this.hide();
+                    }
+                });
+            },
+            onShow:function(){
+                hiddenBody();
+            },
+            onHide:function(){
+                resetOverflow();
+            }
+        },
+        renderContent:function(html,callback){
+            this.$el.find(".popwin-body").html(html);
+            this.initElement();
+            if(typeof callback == "function"){
+                callback.call(this);
+            }
+        },
+        setTitle:function(title){
+            this.$el.find(".popwin-header .text").text(title);
+        },
+        onsure:null,
+        oncancel:null
+    });
+
+    window.Popwin = Popwin;
+})();

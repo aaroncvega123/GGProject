@@ -1,0 +1,107 @@
+(function(factory){
+    if (typeof define === 'function' && define.amd) {
+        define([],factory);
+    } else if (typeof module !== 'undefined' && module.exports) {
+        module.exports = factory;
+    } else {
+        window.DynamicNum = factory();
+    }
+}(function(){
+    //var tplFn = defaultTemplate ? _.getTemplateByHtml(defaultTemplate) : null;
+    //var isIElt9 = _.isIElt9();
+
+    var getNumArray = function(num,length){
+        num = "000000000000000000000000000000" + num;
+        num = num.slice(-length);
+        return num.split("");
+    };
+
+    var DynamicNum = _.inherit(Basic,{
+        template:_.getTemplateById("DynamicNumTemplate"),
+        events:{
+            onBeforeRender:function(){
+                this._formatData();
+            }
+        },
+        old:0,
+        num:0,
+        num_length:10,
+        _formatData:function(){
+            if(!this.data){
+                this.data = {};
+            }
+            this.data.old = getNumArray(this.old,this.num_length);
+            this.data.num = getNumArray(this.num,this.num_length);
+            this.old = this.num;
+        },
+        duration:10,
+        def:null,
+        changeTo:function(newNum){
+            //必须等上一次动画完成
+            if(this.def && this.def.state() !== "resolved"){
+                return;
+            }
+
+            var self = this,$ele;
+            this.def = $.Deferred();
+
+            //重置数据
+            this.old = this.num;
+            this.num = newNum;
+            //渲染
+            this.show();
+
+            //数字变化
+            $ele = this._getAnimateEle();
+            $ele.each(function(){
+                var $this = $(this);
+                var num = $this.data("new");
+                var old = $this.data("old");
+                var timer;
+                var setNum = function(i,max,callback){
+                    (function(i,max,callback){
+                        timer = window.setTimeout(function(){
+                            $this.text(i);
+                            if(i == max){
+                                callback();
+                                window.clearTimeout(timer);
+                            } else {
+                                setNum(++i, max, callback);
+                            }
+                        },self.duration)
+                    })(i,max,callback);
+                };
+
+                if(num > old){
+                    setNum(old, num, function(){
+                        self.def.resolve();
+                    });
+                } else {
+                    //先累加到9，
+                    var half = $.Deferred();
+
+                    setNum(old, 9, function(){
+                        half.resolve();
+                    });
+
+                    //再从0累加到num
+                    $.when(half).done(function(){
+                        setNum(-1, num, function(){
+                            self.def.resolve();
+                        });
+                    });
+                }
+            });
+        },
+        _getAnimateEle:function(){
+            return this.$el.find(".num").filter(function(){
+                var $this = $(this);
+                var old = $this.data("old");
+                var _new = $this.data("new");
+                return old != _new;
+            });
+        },
+        init:function(){}
+    });
+    return DynamicNum;
+}));

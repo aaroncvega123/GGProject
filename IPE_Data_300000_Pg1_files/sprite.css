@@ -1,0 +1,144 @@
+.icon-air-active {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -675px;
+  width: 42px;
+  height: 42px;
+}
+.icon-air {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -613px;
+  width: 42px;
+  height: 42px;
+}
+.icon-arrow-down-white {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -120px;
+  width: 23px;
+  height: 12px;
+}
+.icon-arrow-down {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -56px;
+  width: 23px;
+  height: 12px;
+}
+.icon-arrow-left-active {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -567px;
+  width: 14px;
+  height: 26px;
+}
+.icon-arrow-left-mute {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -521px;
+  width: 14px;
+  height: 26px;
+}
+.icon-arrow-right-active {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -475px;
+  width: 14px;
+  height: 26px;
+}
+.icon-arrow-right-mute {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -429px;
+  width: 14px;
+  height: 26px;
+}
+.icon-arrowBottom {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -28px;
+  width: 15px;
+  height: 8px;
+}
+.icon-arrowTop {
+  background-image: url(../images/sprite.png);
+  background-position: 0px 0px;
+  width: 15px;
+  height: 8px;
+}
+.icon-checkbox-checked {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -266px;
+  width: 18px;
+  height: 18px;
+}
+.icon-checkbox {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -228px;
+  width: 18px;
+  height: 18px;
+}
+.icon-circle {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -304px;
+  width: 21px;
+  height: 21px;
+}
+.icon-date {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -386px;
+  width: 22px;
+  height: 23px;
+}
+.icon-exhaust-active {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -737px;
+  width: 42px;
+  height: 42px;
+}
+.icon-exhaust {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -799px;
+  width: 42px;
+  height: 42px;
+}
+.icon-new {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -88px;
+  width: 26px;
+  height: 12px;
+}
+.icon-radio-checked {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -190px;
+  width: 18px;
+  height: 18px;
+}
+.icon-radio {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -152px;
+  width: 18px;
+  height: 18px;
+}
+.icon-search {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -345px;
+  width: 21px;
+  height: 21px;
+}
+.icon-wastewater-active {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -861px;
+  width: 42px;
+  height: 42px;
+}
+.icon-wastewater {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -923px;
+  width: 42px;
+  height: 42px;
+}
+.icon-water-active {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -985px;
+  width: 42px;
+  height: 42px;
+}
+.icon-water {
+  background-image: url(../images/sprite.png);
+  background-position: 0px -1047px;
+  width: 42px;
+  height: 42px;
+}

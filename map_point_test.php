@@ -533,8 +533,109 @@
 
 	}
 
+
+	var allCities = [];
 	//For setting ipe markers
 	if(ipe.length>0){
+		var opts = {
+			//width : 280,     // 信息窗口宽度
+			//height: 112,     // 信息窗口高度
+			width : 260,     // 信息窗口宽度
+			height: 130,     // 信息窗口高度
+			//title : data[i].company , // 信息窗口标题
+			enableMessage:true,//设置允许信息窗发送短息
+			offset: new BMap.Size(10,-25)
+		};
+
+		function ComplexCustomOverlay(point, text, color, content, curCity){
+			this._point = point;
+			this._text = text;
+			this._color = color;
+			this._content = content;
+			this._curCity = curCity;
+		}
+		ComplexCustomOverlay.prototype = new BMap.Overlay();
+		ComplexCustomOverlay.prototype.initialize = function(mapTemp){
+			this._map = mapTemp;
+			var div = this._div = document.createElement("div");
+			div.style.position = "absolute";
+			div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+			div.style.fontSize = "12px";
+			div.style.borderRadius = "5px";			
+			div.style.boxShadow = "2px 2px #525252";
+			div.style.backgroundColor = this._color;
+			div.style.color = "white";
+			div.style.height = "18px";
+			div.style.paddingBottom = "22px";
+			div.style.paddingTop = "5px";
+			div.style.paddingLeft = "5px";
+			div.style.paddingRight = "5px";
+			div.style.lineHeight = "18px";
+			div.style.whiteSpace = "nowrap";
+			div.style.MozUserSelect = "none";
+
+			var span = this._span = document.createElement("span");
+			div.appendChild(span);
+			span.appendChild(document.createTextNode(this._text));      
+			var that = this;
+			
+			var lng = this._point.lng;
+			var lat = this._point.lat;
+			var hello = "hello world"
+			var content = this._content;
+			var curCity = this._curCity;
+
+			div.onmouseover = function(){
+				var opts = {
+					//width : 280,     // 信息窗口宽度
+					//height: 112,     // 信息窗口高度
+					width : 260,     // 信息窗口宽度
+					height: 130,     // 信息窗口高度
+					//title : data[i].company , // 信息窗口标题
+					enableMessage:true,//设置允许信息窗发送短息
+					offset: new BMap.Size(10,-25)
+				};
+				//alert(content);
+				div.style.cursor = "pointer";	
+
+				var point = new BMap.Point(lng, lat);
+				var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
+				map.openInfoWindow(infoWindow, point); //开启信息窗口
+
+				getBoundary(curCity);
+			};
+
+			
+
+			div.onclick = function(){
+				alert("Hello");
+
+				var mydiv = document.getElementById('getMap_point').innerHTML = '<form id="map_point"  action="map_point.php"><input name="lng" type="hidden" value="'+ lng +'" /><input name="lat" type="hidden" value="'+ lat +'" /></form>';
+				var f = document.getElementById('map_point');
+				if(f) { f.submit() };
+			};
+
+			//var arrow = this._arrow = document.createElement("div");
+			//arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
+			/*arrow.style.position = "absolute";
+			arrow.style.width = "1100px";
+			arrow.style.height = "10px";
+			arrow.style.top = "22px";
+			arrow.style.left = "10px";
+			arrow.style.overflow = "hidden";*/
+			//div.appendChild(arrow);
+
+			map.getPanes().labelPane.appendChild(div);
+			
+			return div;
+		}
+		ComplexCustomOverlay.prototype.draw = function(){
+			var mapTemp = this._map;
+			var pixel = mapTemp.pointToOverlayPixel(this._point);
+			this._div.style.left = pixel.x;
+			this._div.style.top  = pixel.y;
+		}
+
 		for(var i=0;i<ipe.length;i++){
 			
 			// var point_color = "blue";
@@ -543,31 +644,77 @@
 
 			var lng = ipe[i][0].Longitude, lat = ipe[i][0].Latitude;
 
-			var pCompany = new BMap.Marker(new BMap.Point(lng,lat), {
+			var cityFound = false;
+			var curCity = ipe[i][0].CompanyLocation;
+			var cityAndBoolean = [];
+			cityAndBoolean.push(curCity);
+			cityAndBoolean.push(true);
+			allCities.push(cityAndBoolean);
+
+
+			/*var pCompany = new BMap.Marker(new BMap.Point(lng,lat), {
 			  // 指定Marker的icon属性为Symbol
 			  icon: new BMap.Symbol(BMap_Symbol_SHAPE_BACKWARD_CLOSED_ARROW, {
 				scale: 1.6,//图标缩放大小
 				fillColor: "blue",//填充颜色
 				fillOpacity: 0.8//填充透明度
 			  })
-			});
+			});*/
+			
+			///////////////////////////////////////////////////////////////////////////////
+			//For building label-markers
 
-			var curCity = ipe[i][0].CompanyLocation;
+			
+			var color;
+			var entries = ipe[i].length;
+			if(entries <= 10){
+				color = "#66ff33";
+			}
+			else if(entries <= 20 && entries > 10){
+				color = "#ccff33";//greenish yellow
+			}
+			else if(entries <= 50 && entries > 20){
+				color = "#ffcc00";
+			}
+			else if(entries <= 100 && entries > 50){
+				color = "#ff3300";
+			}
+			else if(entries <= 200 && entries > 100 ){
+				color = "#993333";
+			}
+			else if(entries <= 300 && entries > 200){
+				color = "#660066";
+			}
+			else if(entries > 300){
+				color = "black";
+			}
+
+
+				//var point = new BMap.Point(lng, lat);
+				//var infoWindow = new BMap.InfoWindow(this._content, opts);  // 创建信息窗口对象
+				//map.openInfoWindow(infoWindow, point); //开启信息窗口
+			///////////////////////////////////////////////////////////////////////////////
+
+
+
+
 					
 			// var content = "<h4 onclick='win_com_click("+lng+","+lat+")' style='margin:0 0 5px 0;padding:0.2em 0; cursor: pointer; text-decoration: underline;'>"+ipe[i].CompanyName+"</h4>" + "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em;'>"+ipe[i].CompanyLocation+"</p>";
 
 			var content = "<div style='height:130px;overflow-y:scroll'>";
 			for (var j = 0; j < ipe[i].length; j++) {
 				var link = "http://www.ipe.org.cn/IndustryRecord/regulatory-record.aspx?companyId=" + ipe[i][j].CompanyID + "&dataType=0&isyh=0";
-				content += "<a id='clink' href="+link+" onclick='win_com_click("+lng+","+lat+")' style='margin:0 0 5px 0;padding:0.2em 0; cursor: pointer; text-decoration: underline;'>"+ipe[i][j].CompanyName+"</a>" + "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em;'>"+ curCity +"</p>"
+				content += "<a id='clink' href="+link+" onclick='win_com_click("+lng+","+lat+")' style='margin:0 0 5px 0;padding:0.2em 0; cursor: pointer; text-decoration: underline;'>"+ipe[i][j].CompanyName+"</a>" + "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em;'>"+ curCity +"</p>";
 				
 			}
-			content += "</div>"
-		
+			content += "</div>";
+
+			var pCompany = new ComplexCustomOverlay(new BMap.Point(lng,lat), entries, color, content, curCity);	
+			//var icon = new BMap.Marker(new BMap.Point(lng,lat),{icon:pCompany}); 
 		
 			map.addOverlay(pCompany);               // 将标注添加到地图中
-			addClickHandler(content,pCompany);
-			addOverHandler_ipe(content,pCompany,curCity);
+			//addClickHandler(content,pCompany);
+			//addOverHandler_ipe(content,pCompany,curCity);
 			
 		}
 	}
@@ -625,7 +772,7 @@
 		});
 	}
 
-	function getBoundary(city){       
+	/*function getBoundary(city){       
 		var bdary = new BMap.Boundary();
 		bdary.get(city, function(rs){       //获取行政区域  
 			var count = rs.boundaries.length; //行政区域的点有多少个
@@ -635,7 +782,8 @@
 			}
           	var pointArray = [];
 			for (var i = 0; i < count; i++) {
-				var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeColor: "#ff0000"}); //建立多边形覆盖物
+				var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeColor: "#ff0000"}); //建立多边形覆盖物//new BMap.label("Hello");//
+				//ply.setStyle({ borderColor: "#999" });
 				map.addOverlay(ply);  //添加覆盖物
 				// pointArray = pointArray.concat(ply.getPath());
 
@@ -644,6 +792,59 @@
 				});
 			}    
 			// map.setViewport(pointArray);    //调整视野                
+		});   
+	}*/
+
+	function isCityAvailable(city){
+		for(var i = 0; i < allCities.length; i++){
+			if(city == allCities[i][0]){
+				return allCities[i][1];
+			}
+		}
+		return false;
+	}
+
+	function setCityStatus(city, status){
+		for(var i = 0; i < allCities.length; i++){
+			if(city == allCities[i][0]){
+				allCities[i][1] = status;
+			}
+		}
+	}
+
+	function removeBoundary(city, ply){
+		map.removeOverlay(ply);
+		setCityStatus(city, true);
+	}
+
+	function getBoundary(city){
+		//var ply;
+		//map.removeOverlay(ply);   
+		//ply="";
+
+		var bdary = new BMap.Boundary();
+		bdary.get(city, function(rs){       //获取行政区域  
+			var count = rs.boundaries.length; //行政区域的点有多少个
+			if (count === 0) {
+				alert('未能获取当前输入行政区域');
+				return;
+			}
+			
+			var pointArray = [];
+			if(isCityAvailable(city)){
+				setCityStatus(city, false);
+				for (var i = 0; i < count; i++) {
+					var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeColor: "#ff0000"}); //建立多边形覆盖物
+					map.addOverlay(ply);  //添加覆盖物
+					// pointArray = pointArray.concat(ply.getPath());	
+					ply.addEventListener('mouseout', function (clickEvent) {
+						removeBoundary(city, ply);
+					});				
+				}  				
+			}
+ 
+			//map.addOverlay(ply);  //添加覆盖物 
+			// map.setViewport(pointArray);    //调整视野               
 		});   
 	}
 
