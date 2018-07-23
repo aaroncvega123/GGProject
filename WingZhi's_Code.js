@@ -81,7 +81,6 @@ var index = 0;
 var i = 0;
 
 //repeatedly copy and paste this into console to fill coordinate[]
-console.log(coordinate.length);
 if(coordinate.length < locations.length){
 	var myGeo = new BMap.Geocoder();
 	myGeo.getPoint(locations[i], function(point){	
