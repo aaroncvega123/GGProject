@@ -1,4 +1,4 @@
-﻿var pageSize = 3232;
+﻿var pageSize = 300;
 function SubmitCheckCode(index,title,content,pageIndex){
 	    //提示
         $('#spanrecordcount').html('(加载中...)');
@@ -50,17 +50,6 @@ function SubmitCheckCode(index,title,content,pageIndex){
                 }
             });
         }
-         
-         
-        //   
-//        $("input[name=vv_history]").each(function(){
-//           
-//         if($(this).is(':checked'))
-//        {
-//   
-//           ishistory=ishistory+ parseInt( $(this).val());
-//        }
-//        })
          PopCheckCode = new Popwin({
         data: {
             title: title,
@@ -135,4 +124,21 @@ function SubmitCheckCode(index,title,content,pageIndex){
     });
     PopCheckCode.show();
 }
+function ser(pageIndex, pageSize) {
+ var index = $('#uitab_wrap .uitab-header li.current').index();//当前栏目序号
+        if(index==0)
+      {
+       var rnd=Math.random();
+            //弹出验证码
+            var content = "<div class='pop-receive'>        <div class='pop-file'><input style='border:1px solid #8d96a6' id='txtCode' type='text'/>&nbsp; <img src='/Plugin/CheckCode/MakeCode.aspx?tm="+rnd+" alt='点击刷新' onclick=\""
+           +"this.src='/Plugin/CheckCode/MakeCode.aspx?tm='+ Math.random()\""
+           +"/></div>          <div class='clearfix popwin-actions'>  <a href='javascript:void(0);' class='btn-sure '>确定</a> </div></div>";
+       var title = "验证码";
+    
+    
+    
+      }else{
+        getRecordsTableList(pageIndex);
+   }
+    }
 ser(1,pageSize);

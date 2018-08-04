@@ -584,6 +584,7 @@
 
 				div.onmouseover = function(){
 					div.style.cursor = "pointer";
+				
 				};
 
 
@@ -602,8 +603,7 @@
 					var point = new BMap.Point(lng, lat);
 					var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
 					map.openInfoWindow(infoWindow, point); //开启信息窗口
-
-					getBoundary(curCity);
+					ply = getBoundary(curCity);						
 				};
 
 
@@ -705,8 +705,6 @@
 				//var icon = new BMap.Marker(new BMap.Point(lng,lat),{icon:pCompany}); 
 			
 				map.addOverlay(pCompany);               // 将标注添加到地图中
-				//addClickHandler(content,pCompany);
-				//addOverHandler_ipe(content,pCompany,curCity);
 				
 			}
 		}		
